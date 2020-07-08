@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <%- include('../partials/nav_admin.ejs') %>
+    <div class="container">
+      <!-- Title page -->
+      <h1 class="text-primary">A student management system</h1>
+      <blockquote class="blockquote">
+        <p>
+          A student management system (also known as a student information
+          system or SIS) helps a school manage data, communications, and
+          scheduling. A school system generates and uses a large amount of data.
+          This data must be communicated appropriately to students, faculty, and
+          parents. A student management system helps schools to store, manage,
+          and distribute this information. Some student management systems are
+          designed to serve all of a school’s data management needs. Other
+          student management systems are specialized. These specialized
+          solutions target specific needs, such as school applications or
+          student behavior tracking.
+        </p>
+        <footer class="blockquote-footer">
+          Author: Nguyen Trong Nhan-PS10674
+        </footer>
+      </blockquote>
+      <!-- Title -->
+      <div class="row container">
+        <h3 class="text-primary">List admin</h3>
+        <!-- Open modal -->
+        <a href="#" data-toggle="modal" data-target="#myModal">
+          <span
+            class="badge badge-pill badge-primary"
+            style="background-color: white;"
+            ><i style="color: blue;" class="fas fa-plus"></i></span
+        ></a>
+        <!-- Modal add admin -->
+        <div class="modal" id="myModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <!-- Modal Header -->
+              <div class="modal-header">
+                <h4 class="modal-title">ADD ADMIN</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                  &times;
+                </button>
+              </div>
+              <!-- Modal body -->
+              <div class="modal-body">
+                <!-- Form Add Admin -->
+                <form action="/admin/add" method="POST">
+                  <!-- Account type -->
+                  <label for="type">Type Account:</label>
+                  <input
+                    class="form-control"
+                    name="type"
+                    value="Admin"
+                    readonly
+                  />
+                  <!-- Admin full name -->
+                  <label for="name">Full Name:</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Enter username"
+                    name="name"
+                    required
+                  />
+                  <!-- Admin email -->
+                  <label for="email">Email:</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    placeholder="Enter Email"
+                    name="email"
+                    required
+                  />
+                  <!-- Admin phone number -->
+                  <label for="phoneNumber">Phone Number-(0xxxxxxxxx):</label>
+                  <input
+                    type="tel"
+                    pattern="^0\d*"
+                    class="form-control"
+                    placeholder="Enter Phone Number"
+                    name="phoneNumber"
+                    maxlength="11"
+                    minlength="10"
+                    required
+                  />
+                  <!-- Admin password -->
+                  <label for="pass">Password:</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="password"
+                    placeholder="Enter password"
+                    name="password"
+                    minlength="6"
+                    required
+                  />
+                  <!-- Action for form -->
+                  <div
+                    class="row justify-content-center align-items-center"
+                    style="margin-top: 20px;"
+                  >
+                    <button type="submit" class="btn btn-primary col-3">
+                      Submit
+                    </button>
+                    <button
+                      type="reset"
+                      style="margin-left: 20px; margin-right: 20px;"
+                      class="btn btn-primary col-3"
+                    >
+                      Clear
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-primary col-3"
+                      data-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Table list admins -->
+      <table style="margin-top: 10px;" class="table table-bordered table-hover">
+        <!-- Table header-->
+        <thead class="thead-dark">
+          <tr>
+            <th>STT</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+          </tr>
+        </thead>
+        <!-- Table body -->
+        <tbody>
+          <% data.forEach((item,index)=>{%>
+          <tr>
+            <td><%-(index + 1)%></td>
+            <td><%-item.name%></td>
+            <td><%-item.email%></td>
+            <td><%-item.phoneNumber%></td>
+          </tr>
+          <%});%>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

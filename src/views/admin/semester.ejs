@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <%- include('../partials/nav_admin.ejs') %>
+    <div class="container justify-content-center align-items-center">
+      <div class="form-group">
+        <div style="margin-top: 10px;" class="row container">
+          <label for="select">
+            <h2 class="text-primary">
+              Select semester to show information
+            </h2></label
+          >
+          <a href="/admin/semester/formAdd">
+            <span
+              class="badge badge-pill badge-primary"
+              style="background-color: white;"
+              ><i style="color: blue;" class="fas fa-plus"></i></span
+          ></a>
+        </div>
+        <select
+          class="form-control"
+          id="select"
+          onchange="location = this.value"
+        >
+          <option disabled selected value>
+            Select the Semester to get information
+          </option>
+          <% semesters.forEach((item,index)=>{%>
+          <option value="/admin/semester/<%-item.id%>"><%-item.name%></option>
+          <%});%>
+        </select>
+        <% if(locals.semester){ %> 
+          <h3 class="text-primary mt-2"><a href="/admin/semester/edit/<%-semester._id%>"><%-semester.name%></a></h3>
+          <table style="margin-top: 10px;" class="table table-bordered table-hover">
+            <thead class="thead-dark">
+              <tr>
+                <th>STT</th>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>CREDITS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% semester.subjects.forEach((item,index)=>{%> 
+               <tr>
+                 <td><%-(index+1)%></td>
+                 <td><%-item.subjectID%></td>
+                 <td><%-item.name%></td>
+                 <td><%-item.credits%></td>
+               </tr>
+              <%});%>
+            </tbody>
+          </table>
+        
+          <%}%>
+      </div>
+    </div>
+  </body>
+</html>

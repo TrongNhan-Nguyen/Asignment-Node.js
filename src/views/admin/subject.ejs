@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <%- include('../partials/nav_admin.ejs') %>
+    <div class="container">
+      <div class="row container">
+        <!-- Title page -->
+        <h2 class="text-primary">Subject List</h2>
+        <a href="#addSubject" data-toggle="modal">
+          <span
+            class="badge badge-pill badge-primary"
+            style="background-color: white;"
+            ><i style="color: blue;" class="fas fa-plus"></i></span
+        ></a>
+      </div>
+      <!-- Table list Students -->
+      <table style="margin-top: 10px;" class="table table-bordered table-hover">
+        <!-- Header table -->
+        <thead class="thead-dark">
+          <tr>
+            <th>STT</th>
+            <th>ID</th>
+            <th>NAME</th>
+            <th>CREDITS</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <!-- Body table -->
+        <tbody>
+          <% var stt = 5 * query;
+           data.forEach((item,index)=>{%>
+          <tr>
+            <td><%-(index + 1 + stt)%></td>
+            <td><%-item.subjectID%></td>
+            <td><%-item.name%></td>
+            <td><%-item.credits%></td>
+            <td>
+              <a
+                href="#editSubject"
+                class="btnEdit"
+                data-toggle="modal"
+                index="<%-index%>"
+                ><i style="color: red;" class="fas fa-edit"></i
+              ></a>
+            </td>
+            <td>
+              <a
+                href="#deleteSubject"
+                class="btnDelete"
+                data-toggle="modal"
+                index="<%-index%>"
+              >
+                <i style="color: red;" class="fas fa-archive"></i
+              ></a>
+            </td>
+          </tr>
+          <%});%>
+        </tbody>
+      </table>
+
+      <!-- Pagination table -->
+      <div class="container">
+        <ul class="pagination float-right">
+          <li class="page-item">
+            <a id="prev" class="page-link" href="#">Previous</a>
+          </li>
+          <% for(var i = 0; i < 4; i++){ var active = (i==query)? "active": "" ;
+          %>
+          <li class="page-item <%-active%>">
+            <a class="page-link" href="/admin/subject?page=<%-i%>"
+              ><%-(i+1)%></a
+            >
+          </li>
+          <% };%>
+          <li class="page-item">
+            <a id="next" class="page-link" href="#">Next</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- Modal add subject -->
+    <div class="modal" id="addSubject">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title text-primary">ADD SUBJECT</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+          <!-- Modal body -->
+          <div class="modal-body">
+            <!-- Form add subject -->
+            <form action="/admin/subject/add" method="POST">
+              <!-- Subject id -->
+              <label for="subjectID">Subject ID:</label>
+              <input
+                type="text"
+                class="form-control"
+                name="subjectID"
+                placeholder="Enter ID "
+                required
+              />
+              <!-- Subject name -->
+              <label for="name">Subject Name:</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter name"
+                name="name"
+                required
+              />
+              <!-- Subject credits -->
+              <label for="credits">Subject credits:</label>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Enter credits"
+                name="credits"
+                max="5"
+                min="2"
+                required
+              />
+
+              <!-- Action for form -->
+              <div
+                class="row justify-content-center align-items-center"
+                style="margin-top: 20px;"
+              >
+                <button type="submit" class="btn btn-primary col-3">
+                  Submit
+                </button>
+                <button
+                  type="reset"
+                  style="margin-left: 20px; margin-right: 20px;"
+                  class="btn btn-primary col-3"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary col-3"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal edit subject -->
+    <div class="modal" id="editSubject">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title text-primary">EDIT SUBJECT</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+          <!-- Modal body -->
+          <div class="modal-body">
+            <!-- Form Edit subject -->
+            <form action="#" id="formEdit" method="POST">
+              <!-- Subject id -->
+              <label for="subjectID">Subject ID:</label>
+              <input
+                type="text"
+                class="form-control"
+                name="subjectID"
+                placeholder="Enter ID"
+                id="subjectID"
+                required
+              />
+              <!-- Subject name -->
+              <label for="name">Subject Name:</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Enter name"
+                id="subjectName"
+                name="name"
+                required
+              />
+              <!-- Subject credits -->
+              <label for="credits">Subject credits:</label>
+              <input
+                type="number"
+                class="form-control"
+                placeholder="Enter credits"
+                name="credits"
+                id="subjectCredits"
+                max="5"
+                min="2"
+                required
+              />
+
+              <!-- Action for form -->
+              <div
+                class="row justify-content-center align-items-center"
+                style="margin-top: 20px;"
+              >
+                <button
+                  type="submit"
+                  id="submitEdit"
+                  class="btn btn-primary col-3"
+                >
+                  Submit
+                </button>
+                <button
+                  type="reset"
+                  style="margin-left: 20px; margin-right: 20px;"
+                  class="btn btn-primary col-3"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary col-3"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Model delete subject -->
+    <div class="modal" id="deleteSubject">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title text-danger">DELETE SUBJECT</h4>
+            <br />
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <P
+            style="text-align: center; margin-left: 10px; margin-right: 10px;"
+            class="text-danger"
+            id="deleteContent"
+          ></P>
+          <div
+            style="margin-bottom: 10px;"
+            class="row justify-content-center align-items-center"
+          >
+            <a
+              style="margin-right: 10px;"
+              id="submitDelete"
+              class="btn btn-danger col-3"
+            >
+              DELETE
+            </a>
+            <a type="button" class="btn btn-danger col-3" data-dismiss="modal">
+              Close
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(document).ready(() => {
+        var page = <%-query%>;
+        var data = <%-JSON.stringify(data)%>;
+        var next = $("#next");
+        var prev = $("#prev");
+        var btnEdit = $(".btnEdit");
+        var btnDelete = $(".btnDelete");
+        var submitDelete = $("#submitDelete");
+        var deleteContent = $("#deleteContent");
+        var formEdit = $("#formEdit");
+        var subjectDelete;
+        // Next page
+        next.click(() => {
+             page +=1 ;
+            if(page>3) page = 3;
+            next.attr("href","/admin/subject?page=" + page);
+        });
+        // Prev Page
+        prev.click(()=>{
+          page -= 1;
+          if(page<0) page = 0;
+          prev.attr("href","/admin/subject?page=" + page);
+        });
+        // Handle edit
+        btnEdit.each(function(){
+          $(this).click(function(){
+            var index = $(this).attr("index") ;
+            var subject = data[index];
+            $("#subjectID").val(subject.subjectID);
+            $("#subjectName").val(subject.name);
+            $("#subjectCredits").val(subject.credits);
+            formEdit.attr("action","/admin/subject/edit/" + subject._id +"?currentPage=" + page);
+          })
+        })
+        // Handle delete subject
+        btnDelete.each(function(){
+         $(this).click(function(){
+          var index = $(this).attr("index")  ;
+          subjectDelete = data[index];
+          deleteContent.text("Are you sure you wan to delete subject: " + subjectDelete.name +
+          " with ID: " + subjectDelete.subjectID + " ? You can not recovery this subject!" );
+         })
+        })
+        submitDelete.click(()=>{
+          submitDelete.attr("href","/admin/subject/delete/" + subjectDelete._id + "?currentPage=" + page);
+        })
+
+      });
+    </script>
+  </body>
+</html>
