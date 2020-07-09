@@ -41,9 +41,19 @@ const createSubjectTranscript = async (req, res, next) => {
     const { studentID } = req.query;
     const subject = req.body;
     const transcript = await Transcript.findById(transcriptID);
+    const subjectList = [...transcript.subjects];
+    const findDuplicate = subjectList
+      .map((e) => {
+        return e.subject.toString();
+      })
+      .indexOf(subject.subject.toString());
+    if (findDuplicate > -1)
+      throw new Error(
+        "Subject with id: '" + subject.subject + "' is already exists"
+      );
     transcript.subjects.push(subject);
     await transcript.save();
-    res.redirect("/admin/student/edit/" + studentID);
+    return res.redirect("/admin/student/edit/" + studentID);
   } catch (error) {
     return res.send(error.message);
   }
@@ -53,7 +63,7 @@ const deleteStudent = async (req, res, next) => {
   try {
     const { studentID } = req.params;
     const student = await User.findById(studentID);
-    const transcript = await Transcript.findOne({owner: student._id});
+    const transcript = await Transcript.findOne({ owner: student._id });
     await transcript.remove();
     await student.remove();
     res.redirect("/admin/student");
@@ -65,7 +75,7 @@ const deleteStudent = async (req, res, next) => {
 const deleteSubjectTranscript = async (req, res, next) => {
   try {
     const { transcriptID, subjectID } = req.params;
-    const {studentID} = req.query;
+    const { studentID } = req.query;
     const transcript = await Transcript.findById(transcriptID);
     const subjectFound = transcript.subjects.id(subjectID);
     subjectFound.remove();
@@ -152,10 +162,21 @@ const updateStudent = async (req, res, next) => {
 const updateSubjectTranscript = async (req, res, next) => {
   try {
     const { transcriptID, subjectID } = req.params;
-    const {studentID} = req.query;
+    const { studentID } = req.query;
     const transcript = await Transcript.findById(transcriptID);
     const subjectFound = transcript.subjects.id(subjectID);
     const subjectUpdate = await Subject.findOne({ name: req.body.subject });
+    const subjectDefault = [...transcript.subjects];
+    const subjectList = subjectDefault.filter((item) => {
+      return item.subject.toString() !== subjectFound.subject.toString();
+    });
+    const findDuplicate = subjectList
+      .map((e) => {
+        return e.subject.toString();
+      })
+      .indexOf(subjectUpdate._id.toString());
+    if (findDuplicate > -1)
+      throw new Error("Subject : " + subjectUpdate.name + " is already exists");
     subjectFound.set({ ...req.body, subject: subjectUpdate._id });
     await transcript.save();
     return res.redirect("/admin/student/edit/" + studentID);
