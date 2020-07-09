@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <%- include('../partials/nav_admin.ejs') %>
+    <div style="padding-bottom: 20px;" class="container">
+      <h2>Add News</h2>
+      <!-- Form add news -->
+      <form
+        action="/admin/news/edit/<%-news._id%>"
+        enctype="multipart/form-data"
+        method="POST"
+      >
+        <!-- Image picker -->
+        <div class="form-group">
+          <label for="img">Image News:</label>
+          <input
+            type="file"
+            class="form-control-file"
+            id="img"
+            name="img"
+            
+          />
+          <!-- Preview Image -->
+          <div class="container d-flex justify-content-center">
+            <img
+              style="max-height: 250px; max-width: 100%; object-fit: contain;"
+              id="showImage"
+              class="border border-primary rounded-lg"
+              src="/uploads/<%-news.img%>"
+              alt="Image"
+            />
+          </div>
+        </div>
+        <!-- Title -->
+        <div class="form-group">
+          <label for="title">Title:</label>
+          <textarea
+            class="form-control"
+            placeholder="Enter title"
+            minlength="10"
+            maxlength="250"
+            name="title"
+            id="title"
+            rows="1"
+            required
+            ><%-news.title%></textarea>
+        </div>
+        <!-- Descriptions -->
+        <div class="form-group">
+          <label for="desc">Descriptions:</label>
+
+          <textarea
+            class="form-control"
+            placeholder="Enter Descriptions"
+            minlength="10"
+            name="desc"
+            rows="3"
+            id="desc"
+            required
+            ><%-news.desc%></textarea>
+        </div>
+        <!-- News's type -->
+        <div class="form-group">
+          <label for="type">Type:</label>
+          <select class="form-control" id="status" name="type">
+            <% var data = ['Learning','Activities','Fees']; data.forEach(item=>{
+            var selected = (item === news.type) ? "selected" : ""; %>
+            <option <%-selected%>><%-item%></option>
+            <%});%>
+          </select>
+        </div>
+        <!-- Action for form -->
+        <div class="d-flex justify-content-center">
+          <button
+            style="width: 200px;"
+            type="submit"
+            class="btn btn-primary mr-4"
+          >
+            Submit
+          </button>
+          <button
+            style="width: 200px;"
+            type="reset"
+            id="clear"
+            class="btn btn-primary ml-4"
+          >
+            Clear
+          </button>
+          <a href="/admin/news/delete/<%-news._id%>" style="width: 200px; color: white;" class="btn btn-primary ml-4">
+            Delete
+          </a>
+        </div>
+      </form>
+    </div>
+    <script>
+      $(document).ready(() => {
+        function readURL(input) {
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = (e) => {
+              $("#showImage").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+          }
+        }
+        $("#clear").click(() => {
+          $("#showImage").attr("src","/uploads/<%-news.img%>");
+          $("#title").text("");
+          $("#desc").text("");
+        });
+        $("#img").change(function () {
+          readURL(this);
+        });
+      });
+    </script>
+  </body>
+</html>

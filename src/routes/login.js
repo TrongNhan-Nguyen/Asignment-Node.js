@@ -1,7 +1,7 @@
 const express = require('express');
 const route = express.Router();
-const loginController = require("../controller/login");
-const adminController  = require("../controller/admin");
+const loginController = require("../controller/admin/login");
+const adminController  = require("../controller/admin/admin");
 // Get
 route.get("/",loginController.login);
 // Post
