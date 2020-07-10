@@ -1,6 +1,8 @@
-const User = require("../../model/User");
-const Transcript = require("../../model/Transcript");
+const Schedule = require("../../model/Schedule");
 const Subject = require("../../model/Subject");
+const Transcript = require("../../model/Transcript");
+const User = require("../../model/User");
+const bcrypt = require("bcryptjs");
 var isAdmin;
 
 // Crete Admin
@@ -11,6 +13,9 @@ const createAdmin = async (req, res, next) => {
     if (foundUser) {
       throw new Error("This email is already exists");
     }
+    const salt = await bcrypt.genSalt(10);
+    const passHashed = await bcrypt.hash(admin.password, salt);
+    admin.password = passHashed;
     await admin.save();
     return res.redirect("/admin");
   } catch (err) {
@@ -25,10 +30,19 @@ const createStudent = async (req, res, next) => {
     if (foundUser) {
       throw new Error("This email is already exists");
     }
+    const salt = await bcrypt.genSalt(10);
+    const passHashed = await bcrypt.hash(student.password, salt);
+    // student.password = passHashed;
     await student.save();
     const transcript = new Transcript({ owner: student._id });
+    const schedule = new Schedule({ owner: student._id });
     await transcript.save();
-    await student.update({ transcript: transcript._id });
+    await schedule.save();
+    await student.update({
+      password: passHashed,
+      transcript: transcript._id,
+      schedule: schedule._id,
+    });
     res.redirect("/admin/student");
   } catch (err) {
     res.send(err.message);
@@ -64,7 +78,9 @@ const deleteStudent = async (req, res, next) => {
     const { studentID } = req.params;
     const student = await User.findById(studentID);
     const transcript = await Transcript.findOne({ owner: student._id });
+    const schedule = await Schedule.findOne({ owner: student._id });
     await transcript.remove();
+    await schedule.remove();
     await student.remove();
     res.redirect("/admin/student");
   } catch (err) {
@@ -81,6 +97,19 @@ const deleteSubjectTranscript = async (req, res, next) => {
     subjectFound.remove();
     await transcript.save();
     return res.redirect("/admin/student/edit/" + studentID);
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
+// Get Admin
+const getAdmin = async (req, res, next) => {
+  try {
+    const user = req.session.user;
+    if (user && user.type === "Admin") {
+      const admin = await User.findById(user._id);
+      return res.render("admin/edit_admin", { admin });
+    }
+    return res.send("Page not found");
   } catch (error) {
     return res.send(error.message);
   }
@@ -103,9 +132,9 @@ const getListAdmin = async (req, res, next) => {
 // Get list student
 const getListStudent = async (req, res, next) => {
   try {
-    if(isAdmin){
-    const data = await User.find({ type: "Student" });
-    return res.render("admin/student", { data });
+    if (isAdmin) {
+      const data = await User.find({ type: "Student" });
+      return res.render("admin/student", { data });
     }
     return res.send("Page not found");
   } catch (err) {
@@ -145,11 +174,28 @@ const getScript = async (req, res, next) => {
     return res.send(error.message);
   }
 };
+// Update admin
+const updateAdmin = async (req, res, next) => {
+  try {
+    const { adminID } = req.params;
+    const admin = req.body;
+    const salt = await bcrypt.genSalt(10);
+    const passHashed = await bcrypt.hash(admin.password, salt);
+    admin.password = passHashed;
+    await User.findByIdAndUpdate(adminID, admin);
+    res.redirect("/admin");
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
 // Update student
 const updateStudent = async (req, res, next) => {
   try {
     const { studentID } = req.params;
     const student = req.body;
+    const salt = await bcrypt.genSalt(10);
+    const passHashed = await bcrypt.hash(student.password, salt);
+    student.password = passHashed;
     await User.findByIdAndUpdate(studentID, student);
     res.redirect("/admin/student");
   } catch (err) {
@@ -189,10 +235,12 @@ module.exports = {
   createSubjectTranscript,
   deleteStudent,
   deleteSubjectTranscript,
+  getAdmin,
   getListAdmin,
   getListStudent,
   getStudent,
   getScript,
+  updateAdmin,
   updateStudent,
   updateSubjectTranscript,
 };

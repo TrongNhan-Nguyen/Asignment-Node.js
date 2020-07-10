@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/sb-admin-2.min.css" />
+    <link rel="stylesheet" href="/css/fonts-admin2.css" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div id="wrapper">
+      <%- include('../partials/nav_student.ejs',{name: user.name}) %>
+      <!-- Body wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column mt-4">
+        <!-- Main Content -->
+        <div id="content">
+          <div class="container">
+            <h3 class="text-primary">Student's Profile</h3>
+            <!-- Form show profile -->
+            <form action="#">
+              <!-- Student Name -->
+              <div class="form-group row">
+                <label class="col-2 col-form-label" for="email"
+                  >Full Name:</label
+                >
+                <div class="col-9">
+                  <input
+                    type="text"
+                    class="form-control"
+                    value="<%-student.name%>"
+                    readonly
+                  />
+                </div>
+              </div>
+              <!-- Student Phone Number -->
+              <div class="form-group row">
+                <label class="col-2 col-form-label" for="PhoneNumber"
+                  >Phone:</label
+                >
+                <div class="col-9">
+                  <input
+                    type="text"
+                    class="form-control"
+                    value="<%-student.phoneNumber%>"
+                    readonly
+                  />
+                </div>
+              </div>
+              <!-- Student Email -->
+              <div class="form-group row">
+                <label class="col-2 col-form-label" for="email">Email:</label>
+                <div class="col-9">
+                  <input
+                    type="email"
+                    class="form-control"
+                    value="<%-student.email%>"
+                    readonly
+                  />
+                </div>
+              </div>
+              <!-- Student Password -->
+              <div class="form-group row">
+                <label class="col-2 col-form-label" for="pass">Password:</label>
+                <div class="col-9">
+                  <input
+                    type="password"
+                    class="form-control"
+                    value="<%-student.password%>"
+                    readonly
+                  />
+                </div>
+              </div>
+              <!-- Student Sex -->
+              <div class="form-group row">
+                <label class="col-2 col-form-label" for="sex">Sex:</label>
+                <div class="col-9">
+                  <input
+                    type="text"
+                    class="form-control"
+                    value="<%-student.sex%>"
+                    readonly
+                  />
+                </div>
+              </div>
+              <!-- Student Specialized -->
+              <div class="form-group row">
+                <label class="col-2 col-form-label" for="specialized"
+                  >Specialized:</label
+                >
+                <div class="col-9">
+                  <input
+                    type="text"
+                    class="form-control"
+                    value="<%-student.specialized%>"
+                    readonly
+                  />
+                </div>
+              </div>
+              <!-- Student Class -->
+              <div class="form-group row">
+                <label class="col-2 col-form-label" for="class">Class:</label>
+                <div class="col-9">
+                  <input
+                    type="text"
+                    class="form-control"
+                    readonly
+                    value="<%-student.class%>"
+                  />
+                </div>
+              </div>
+              <!-- Date of birth -->
+              <div class="form-group row">
+                <label for="birthday" class="col-2 col-form-label"
+                  >Birthday:</label
+                >
+                <div class="col-9">
+                  <input
+                    class="form-control"
+                    readonly
+                    value="<%-student.birthday%>"
+                  />
+                </div>
+              </div>
+              <!-- Action for form -->
+              <div
+                class="row justify-content-center align-items-center"
+                style="margin-top: 50px;"
+              >
+                <button
+                  type="button"
+                  class="btn btn-primary col-5"
+                  data-toggle="modal"
+                  data-target="#changePassword"
+                >
+                  Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+          <!-- Modal change password -->
+        </div>
+      </div>
+      <!-- End body warper -->
+    </div>
+
+    <!--  Modal Change Password -->
+    <div class="modal" id="changePassword">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Change Password</h4>
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <form action="/student/profile" id="changePass" method="POST">
+              <!-- Current Password -->
+              <div class="form-group row">
+                <label class="col-4 col-form-label" for="class"
+                  >Password:</label
+                >
+                <div class="col-8">
+                  <input
+                    id="currentPass"
+                    type="password"
+                    minlength="6"
+                    name="currentPass"
+                    class="form-control"
+                    placeholder="Enter your current password"
+                    required
+                  />
+                </div>
+              </div>
+              <!-- New password -->
+              <div class="form-group row">
+                <label class="col-4 col-form-label" for="class"
+                  >New Password:</label
+                >
+                <div class="col-8">
+                  <input
+                    id="newPass"
+                    type="password"
+                    class="form-control"
+                    placeholder="Enter your current password"
+                    minlength="6"
+                    required
+                  />
+                </div>
+              </div>
+              <!-- Confirm new password -->
+              <div class="form-group row">
+                <label class="col-4 col-form-label" for="class"
+                  >Confirm Password:</label
+                >
+                <div class="col-8">
+                  <input
+                    id="confirmPass"
+                    type="password"
+                    class="form-control"
+                    placeholder="Enter your current password"
+                    name="password"
+                    minlength="6"
+                    required
+                  />
+                </div>
+              </div>
+              <!-- Show error -->
+              <h5 style="text-align: center; color: red;" id="validate"></h5>
+              <!-- Action for form -->
+              <div
+                class="row justify-content-center align-items-center"
+                style="margin-top: 20px;"
+              >
+                <button
+                  style="margin-right: 5px;"
+                  type="submit"
+                  class="btn btn-primary col-5"
+                >
+                  Change Password
+                </button>
+                <button
+                  style="margin-left: 5px;"
+                  type="button"
+                  class="btn btn-primary col-5"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Script for file -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(() => {
+        var current = $("#currentPass");
+        var newPass = $("#newPass");
+        var confirm = $("#confirmPass");
+        var form = $("#changePass");
+        var validate = $("#validate");
+        form.submit(function () {
+          if (newPass.val() !== confirm.val()) {
+            validate.text("Confirm password doesn't match");
+            return false;
+          }
+          validate.text("");
+          return true;
+        });
+      });
+    </script>
+  </body>
+</html>

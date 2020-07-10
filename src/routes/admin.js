@@ -19,6 +19,7 @@ const upload = multer({ storage: storage });
 /*--------GET--------*/
 // Admin
 router.get("/", adminController.getListAdmin);
+router.get("/edit", adminController.getAdmin);
 // News
 router.get("/news", newsController.getNewsList);
 router.get("/news/add", newsController.formAdd);
@@ -46,6 +47,7 @@ router.get("/subject/delete/:subjectID", subjectController.deleteSubject);
 /*--------POST--------*/
 // Admin
 router.post("/add", adminController.createAdmin);
+router.post("/edit/:adminID", adminController.updateAdmin);
 // News
 router.post("/news/add", upload.single("img"), newsController.createNews);
 router.post("/news/edit/:newsID", upload.single("img"), newsController.updateNews);

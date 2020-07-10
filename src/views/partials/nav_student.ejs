@@ -1,0 +1,83 @@
+<div id="wrapper">
+  <!-- Sidebar -->
+  <ul
+    class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+    id="accordionSidebar"
+  >
+    <!-- Sidebar - Brand -->
+    <div class="sidebar-brand d-flex align-items-center justify-content-center">
+      <div>
+        Hello! 
+        <h6 style="font-size: 13px;font-weight: bold;"> <%-name%></h6>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <hr class="sidebar-divider my-0" />
+
+    <!-- Nav Item - Dashboard -->
+    <li class="nav-item active">
+      <a class="nav-link" href="/student">
+        <i class="fas fa-fw fa-home"></i>
+        <span>Home</span></a
+      >
+    </li>
+    <!-- Divider -->
+    <hr class="sidebar-divider" />
+    <!-- Nav Item - Course Registration -->
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="fas fa-fw fa-university"></i>
+        <span>Course Registration</span></a
+      >
+    </li>
+
+    <!-- Nav Item - Schedule -->
+    <li class="nav-item">
+      <a class="nav-link" href="#">
+        <i class="fas fa-fw fa-calendar"></i>
+        <span>Schedule</span></a
+      >
+    </li>
+    <!-- Nav Item - Transcripts -->
+    <li class="nav-item">
+      <a class="nav-link" href="/student/transcript">
+        <i class="fas fa-fw fa-table"></i>
+        <span>Transcript</span></a
+      >
+    </li>
+    <!-- Nav Item - Pages Collapse Menu -->
+    <li class="nav-item">
+      <a
+        class="nav-link collapsed"
+        href="#"
+        data-toggle="collapse"
+        data-target="#collapseTwo"
+        aria-expanded="true"
+        aria-controls="collapseTwo"
+      >
+        <i class="fas fa-fw fa-user"></i>
+        <span>Account</span>
+      </a>
+      <div
+        id="collapseTwo"
+        class="collapse"
+        aria-labelledby="headingTwo"
+        data-parent="#accordionSidebar"
+      >
+        <div class="bg-white py-2 collapse-inner rounded">
+          <a class="collapse-item" href="/student/profile">Profile</a>
+          <a class="collapse-item" href="/logout">Logout</a>
+        </div>
+      </div>
+    </li>
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block" />
+
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+      <button class="rounded-circle border-0" id="sidebarToggle"></button>
+    </div>
+  </ul>
+  <!-- End of Sidebar -->
+</div>

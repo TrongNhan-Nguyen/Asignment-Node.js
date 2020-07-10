@@ -8,8 +8,6 @@ const TranscriptSchema = new Schema(
         subject: {
           type: Schema.Types.ObjectId,
           ref: "Subject",
-          index: true,
-          unique: true,
         },
         scores: { type: Number },
         status: {
@@ -22,9 +20,6 @@ const TranscriptSchema = new Schema(
     owner: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
-      index: true,
-      unique: true,
     },
   },
   { collection: "Transcript" }

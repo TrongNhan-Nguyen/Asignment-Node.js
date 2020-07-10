@@ -3,7 +3,6 @@ const express = require("express");
 const fs = require('fs')
 const mongoose = require("mongoose");
 const morgan = require("morgan");
-// const multer = require("multer");
 const session = require("express-session");
 
 const adminRoute = require("./src/routes/admin");
@@ -11,14 +10,7 @@ const loginRoute = require("./src/routes/login");
 const studentRoute = require("./src/routes/student");
 const app = express();
 const port = 3000;
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, "./src/uploads");
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, file.filename + "-" + Date.now());
-//   },
-// });
+
 app.set("view engine", "ejs");
 app.set("views", "src/views");
 app.use(

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <%- include('../partials/nav_admin.ejs') %>
+    <div class="container">
+      <!-- Form Add Admin -->
+      <h2>Admin Profile</h2>
+      <form action="/admin/edit/<%-admin._id%>" method="POST">
+        <!-- Account type -->
+        <label for="type">Type Account:</label>
+        <input class="form-control" name="type" value="Admin" readonly />
+        <!-- Admin full name -->
+        <label for="name">Full Name:</label>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Enter username"
+          name="name"
+          value="<%-admin.name%>"
+          id="name"
+          required
+        />
+        <!-- Admin email -->
+        <label for="email">Email:</label>
+        <input
+          type="email"
+          class="form-control"
+          placeholder="Enter Email"
+          name="email"
+          value="<%-admin.email%>"
+          id="email"
+          required
+        />
+        <!-- Admin phone number -->
+        <label for="phoneNumber">Phone Number-(0xxxxxxxxx):</label>
+        <input
+          type="tel"
+          pattern="^0\d*"
+          class="form-control"
+          placeholder="Enter Phone Number"
+          name="phoneNumber"
+          value="<%-admin.phoneNumber%>"
+          maxlength="11"
+          minlength="10"
+          id="phoneNumber"
+          required
+        />
+        <!-- Admin password -->
+        <label for="pass">Password:</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          placeholder="Enter password"
+          name="password"
+          value="<%-admin.password%>"
+          minlength="6"
+          required
+        />
+        <!-- Action for form -->
+        <div
+          class="row justify-content-center align-items-center"
+          style="margin-top: 20px;"
+        >
+          <button type="submit" class="btn btn-primary col-3">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

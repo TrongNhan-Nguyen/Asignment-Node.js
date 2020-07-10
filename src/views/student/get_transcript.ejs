@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/sb-admin-2.min.css" />
+    <link rel="stylesheet" href="/css/fonts-admin2.css" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div id="wrapper">
+      <%- include('../partials/nav_student.ejs',{name:user.name}) %>
+      <!-- Body wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+        <div class="container">
+          <h3 class="text-primary">Transcript</h3>
+          <table
+          style="margin-top: 10px;"
+          class="table table-bordered table-hover"
+        >
+          <!-- Table header-->
+          <thead class="thead-dark">
+            <tr>
+              <th>STT</th>
+              <th>SUBJECT ID</th>
+              <th>NAME</th>
+              <th>CREDITS</th>
+              <th>SCORES</th>
+              <th>STATUS</th>
+            </tr>
+          </thead>
+          <!-- Table body -->
+          <tbody>
+            <% transcript.forEach((item,index)=>{%>  
+              <tr>
+                <td><%-(index+1)%></td>
+                <td><%-item.subject.subjectID%></td>
+                <td><%-item.subject.name%></td>
+                <td><%-item.subject.credits%></td>
+                <td><%-item.scores%></td>
+                <td><%-item.status%></td>
+              
+              </tr>
+              <% }); %>
+          </tbody>
+        </table>
+        </div>
+        </div>
+      </div>
+      <!-- End body warper -->
+    </div>
+
+    <!-- Script for file -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+  </body>
+</html>

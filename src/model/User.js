@@ -17,11 +17,13 @@ const UserSchema = new Schema(
       enum: ["Admin", "Student"],
       default: "Student",
     },
+    schedule:{
+      type: Schema.Types.ObjectId,
+      ref: "Schedule",
+    },
     transcript: {
       type: Schema.Types.ObjectId,
       ref: "Transcript",
-      index: true,
-      unique: true,
     },
     phoneNumber: {
       type: String,
