@@ -31,7 +31,7 @@ const addSubject = async (req, res, next) => {
     });
     schedule.subjects.push(subject);
     await schedule.save();
-    res.redirect("/student/registration");
+    res.redirect("/student/schedule");
   } catch (error) {
     return res.send(error.message);
   }
