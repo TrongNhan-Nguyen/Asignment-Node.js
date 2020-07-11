@@ -2,14 +2,15 @@ const express = require('express');
 const route = express.Router();
 const studentController = require("../controller/student/student");
 /*--------GET--------*/
-// Home Page
 route.get("/",studentController.home);
-// News
 route.get("/news/:newsID",studentController.getNews);
-// Transcript
-route.get("/transcript",studentController.getTranscript);
-// Student
-route.get("/profile",studentController.getProfile);
+route.get("/profile",studentController.profile);
+route.get("/registration",studentController.registration);
+route.get("/schedule",studentController.schedule);
+route.get("/transcript",studentController.transcript);
 /*--------POST--------*/
+// Change password
 route.post("/profile",studentController.changePassword);
+// Course registration;
+route.post("/registration",studentController.addSubject);
 module.exports = route;

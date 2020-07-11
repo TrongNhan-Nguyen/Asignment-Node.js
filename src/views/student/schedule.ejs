@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/sb-admin-2.min.css" />
+    <link rel="stylesheet" href="/css/fonts-admin2.css" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div id="wrapper">
+      <%- include('../partials/nav_student.ejs',{name:user.name}) %>
+      <!-- Body wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <div class="container mt-2">
+            <h2 class="text-primary">Schedule</h2>
+            <table
+              style="margin-top: 10px;"
+              class="table table-bordered table-hover"
+            >
+              <!-- Table header-->
+              <thead class="thead-dark">
+                <tr>
+                  <th>STT</th>
+                  <th>DATE</th>
+                  <th>SUBJECT ID</th>
+                  <th>NAME</th>
+                  <th>SHIFT</th>
+                </tr>
+              </thead>
+              <!-- Table body -->
+              <tbody>
+                <% data.forEach((item,index)=>{%>
+                <tr>
+                  <td><%-(index+1)%></td>
+                  <td><%-item.stringDate%></td>
+                  <td><%-item.subjectID%></td>
+                  <td><%-item.name%></td>
+                  <td><%-item.shift%></td>
+                </tr>
+                <%});%>
+              </tbody>
+            </table>
+            <ul class="pagination justify-content-end">
+              <li class="page-item">
+                <a id="prev" class="page-link" href="#">Previous</a>
+              </li>
+              <% for(var i = 0; i< maxPage ; i++){ var active = (i==(page-1))?
+              "active": "" ; %>
+              <li class="page-item <%-active%>">
+                <a class="page-link" href="/student/schedule?page=<%-(i+1)%>">
+                  <%-(i+1)%></a
+                >
+              </li>
+
+              <%};%>
+              <li class="page-item">
+                <a id="next" class="page-link" href="#">Next</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- End body warper -->
+    </div>
+    <!-- Script for file -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(()=>{
+          var page = <%-page%>;
+          var maxPage = <%-maxPage%>;
+          var next = $("#next");
+          var prev = $("#prev");
+           // Next page
+         next.click(() => {
+           page +=1 ;
+          if(page>maxPage) page = maxPage;
+          next.attr("href","/student/schedule?page=" + page);
+      });
+          // Prev Page
+          prev.click(()=>{
+          page -= 1;
+          if(page<0) page = 0;
+          prev.attr("href","/student/schedule?page=" + page);
+        });
+      });
+    </script>
+  </body>
+</html>

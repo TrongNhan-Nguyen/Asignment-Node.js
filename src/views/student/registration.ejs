@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/sb-admin-2.min.css" />
+    <link rel="stylesheet" href="/css/fonts-admin2.css" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div id="wrapper">
+      <%- include('../partials/nav_student.ejs',{name:user.name}) %>
+      <!-- Body wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <div class="container">
+            <h3 class="text-primary">Transcript</h3>
+            <table
+              style="margin-top: 10px;"
+              class="table table-bordered table-hover"
+            >
+              <!-- Table header-->
+              <thead class="thead-dark">
+                <tr>
+                  <th>STT</th>
+                  <th>SUBJECT ID</th>
+                  <th>NAME</th>
+                  <th>CREDITS</th>
+                  <th>ADD</th>
+                </tr>
+              </thead>
+              <!-- Table body -->
+              <tbody>
+                <% data.forEach((item,index)=>{%>
+                <tr>
+                  <td><%-(index+1)%></td>
+                  <td><%-item.subjectID%></td>
+                  <td><%-item.name%></td>
+                  <td><%-item.credits%></td>
+                  <td>
+                    <a
+                      href="#addSubject"
+                      class="btnAdd"
+                      index="<%-index%>"
+                      data-toggle="modal"
+                    >
+                      <i style="color: red;" class="fas fa-plus"></i
+                    ></a>
+                  </td>
+                </tr>
+                <%});%>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+      </div>
+      <!-- End body warper -->
+      <!--  Modal add subject to schedule -->
+      <div class="modal" id="addSubject">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">Course Registration</h4>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+              <form action="/student/registration" method="POST" id="formAdd">
+                <!-- Subjects Name -->
+                <div class="form-group row">
+                  <label class="col-4 col-form-label" for="class"
+                    >Subject:</label
+                  >
+                  <div class="col-8">
+                    <input
+                      id="subjectName"
+                      type="text"
+                      class="form-control"
+                      readonly
+                    />
+                  </div>
+                </div>
+                <!-- Subject ID hidden -->
+                <input
+                type="text"
+                class="form-control"
+                name="subject"
+                hidden
+              />
+                <!-- Block -->
+                <div class="form-group row">
+                  <label class="col-4" for="block">Block:</label>
+                  <div class="col-8">
+                    <select name="block" class="form-control" id="block">
+                      <option>1</option>
+                      <option>2</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- Shift -->
+                <div class="form-group row">
+                  <label class="col-4" for="shift">Shift:</label>
+                  <div class="col-8">
+                    <select name="shift" class="form-control">
+                      <option>1</option>
+                      <option>2</option>
+                      <option>3</option>
+                      <option>4</option>
+                    </select>
+                  </div>
+                </div>
+                  <!-- Days of week -->
+                  <div class="form-group row">
+                    <label class="col-4" for="shift">Days of Week:</label>
+                    <div class="col-8">
+                      <select name="days" id="days" class="form-control">
+                        <option value="Even">Mondays, Wednesdays, Fridays</option>
+                        <option value="Odd" >Tuesdays, Thursdays, Saturdays</option>
+                      </select>
+                    </div>
+                  </div>
+                <!-- Start Date -->
+                <div class="form-group row">
+                  <label class="col-4 col-form-label" for="class"
+                    >Start Date:</label
+                  >
+                  <div class="col-8">
+                    <input
+                      id="startDate"
+                      type="date"
+                      class="form-control"
+                      name="startDate"
+                      value="2020-07-01"
+                      readonly
+                    />
+                  </div>
+                </div>
+                <!-- Confirm new password -->
+                <div class="form-group row">
+                  <label class="col-4 col-form-label" for="class"
+                    >End Date:</label
+                  >
+                  <div class="col-8">
+                    <input
+                      id="endDate"
+                      type="date"
+                      class="form-control"
+                      name="endDate"
+                      value="2020-08-01"
+                      readonly
+                    />
+                  </div>
+                </div>
+                <!-- Show error -->
+                <h5 style="text-align: center; color: red;" id="validate"></h5>
+                <!-- Action for form -->
+                <div
+                  class="row justify-content-center align-items-center"
+                  style="margin-top: 20px;"
+                >
+                  <button
+                    style="margin-right: 5px;"
+                    type="submit"
+                    class="btn btn-primary col-5"
+                  >
+                    Confirm
+                  </button>
+                  <button
+                    style="margin-left: 5px;"
+                    type="button"
+                    class="btn btn-primary col-5"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script for file -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(()=>{
+          var data = <%-JSON.stringify(data)%>;
+          var btnAdd = $(".btnAdd");
+          var block = $("select#block");
+          var days = $("select#days");
+          var subjectInput = $("input[name=subject]")
+          var subjectName = $("#subjectName");
+          var startDate = $("#startDate");
+          var endDate = $("#endDate");
+          btnAdd.each(function(){
+              $(this).click(function(){
+              var subject = data[$(this).attr('index')];
+              subjectName.val(subject.name);
+              subjectInput.val(subject._id);
+              })
+          })
+          block.change(function(){
+              var index = $(this).val();
+              var start,end;
+
+              if(index == 1){
+                  start = '2020-07-01';
+                  end = '2020-08-01';
+                  startDate.val(start);
+                  endDate.val(end);
+              }else{
+                  start = '2020-08-01';
+                  end = '2020-09-01';
+                  startDate.val(start);
+                  endDate.val(end);
+
+              }
+          });
+          days.change(function(){
+              var index = $(this).val();
+          });
+      });
+    </script>
+  </body>
+</html>
