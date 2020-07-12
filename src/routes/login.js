@@ -5,5 +5,5 @@ const loginController = require("../controller/admin/login");
 route.get("/",loginController.login);
 route.get("/logout",loginController.logout);
 // Post
-route.post("/",loginController.getUser);
+route.post("/login",loginController.getUser);
 module.exports = route;

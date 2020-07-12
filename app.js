@@ -19,7 +19,7 @@ app.use(
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("src/public"));
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 app.use("/", loginRoute);
 app.use("/admin", adminRoute);
 app.use("/student", studentRoute);
@@ -32,6 +32,7 @@ mongoose
   })
   .then(() => console.log("Connection to MongoDB successfully"))
   .catch((err) => console.log(err));
+
 app.listen(port, () =>
   console.log(`App listening on http://localhost:${port}`)
 );

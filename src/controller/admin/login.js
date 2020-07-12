@@ -21,19 +21,26 @@ const logout = async (req, res, next) => {
 // Determinative user for route
 const getUser = async (req, res, next) => {
   try {
-    const { email, pass } = req.body;
+    const isMobile = req.header("Accept").includes("application/json");
+    const { email, password } = req.body;
     const user = await User.findOne({ email });
     req.session.user = user;
     if (user) {
-      const checkPass = await bcrypt.compare(pass, user.password);
+      const checkPass = await bcrypt.compare(password, user.password);
       if (checkPass) {
         if (user.type === "Student") {
+          if (isMobile) {
+            return res.status(200).send(user);
+          };
           return res.redirect("/student");
         }
+        if (isMobile) return res.status(201).send({});
         return res.redirect("/admin");
       }
+      if (isMobile) return res.status(202).send({});
       return res.send("Password incorrect");
     } else {
+      if (isMobile) return res.status(201).send({});
       return res.send("User not found, please try again!");
     }
   } catch (error) {
