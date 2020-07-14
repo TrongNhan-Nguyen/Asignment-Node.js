@@ -21,6 +21,23 @@
             <h3 class="text-primary">Student's Profile</h3>
             <!-- Form show profile -->
             <form action="#">
+              <!-- Avatar -->
+              <div
+                style="margin-bottom: 20px;"
+                class="container d-flex justify-content-center"
+              >
+                <img
+                  style="
+                    max-height: 250px;
+                    max-width: 100%;
+                    object-fit: contain;
+                  "
+                  id="showImage"
+                  class="border border-primary rounded-lg"
+                  src="/uploads/avatar/<%-student.img%>"
+                  alt="Image"
+                />
+              </div>
               <!-- Student Name -->
               <div class="form-group row">
                 <label class="col-2 col-form-label" for="email"
@@ -127,7 +144,7 @@
               <!-- Action for form -->
               <div
                 class="row justify-content-center align-items-center"
-                style="margin-top: 50px;"
+                style="margin-top: 10px; margin-bottom: 10px;"
               >
                 <button
                   type="button"

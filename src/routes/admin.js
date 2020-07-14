@@ -56,8 +56,8 @@ router.get("/subject/delete/:subjectID", subjectController.deleteSubject);
 
 /*--------POST--------*/
 // Admin
-router.post("/add", adminController.createAdmin);
-router.post("/edit/:adminID", adminController.updateAdmin);
+router.post("/add",  avatar.single("avatar"),adminController.createAdmin);
+router.post("/edit/:adminID",avatar.single("avatar"), adminController.updateAdmin);
 // News
 router.post("/news/add", news.single("img"), newsController.createNews);
 router.post(

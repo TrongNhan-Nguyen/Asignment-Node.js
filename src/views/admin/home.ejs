@@ -57,7 +57,7 @@
               <!-- Modal body -->
               <div class="modal-body">
                 <!-- Form Add Admin -->
-                <form action="/admin/add" method="POST">
+                <form action="/admin/add" method="POST" enctype="multipart/form-data">
                   <!-- Account type -->
                   <label for="type">Type Account:</label>
                   <input
@@ -66,6 +66,30 @@
                     value="Admin"
                     readonly
                   />
+                  <!-- Image picker -->
+                  <div class="form-group">
+                    <label for="img">Avatar:</label>
+                    <input
+                      type="file"
+                      class="form-control-file"
+                      id="img"
+                      name="avatar"
+                    />
+                    <!-- Preview Image -->
+                    <div class="container d-flex justify-content-center">
+                      <img
+                        style="
+                          max-height: 250px;
+                          max-width: 100%;
+                          object-fit: contain;
+                        "
+                        id="showImage"
+                        class="border border-primary rounded-lg"
+                        src="#"
+                        alt="Image"
+                      />
+                    </div>
+                  </div>
                   <!-- Admin full name -->
                   <label for="name">Full Name:</label>
                   <input
@@ -160,5 +184,24 @@
         </tbody>
       </table>
     </div>
+    <script>
+      $(document).ready(() => {
+        function readURL(input) {
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = (e) => {
+              $("#showImage").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+          }
+        }
+        $("#clear").click(() => {
+          $("#showImage").attr("src", null);
+        });
+        $("#img").change(function () {
+          readURL(this);
+        });
+      });
+    </script>
   </body>
 </html>

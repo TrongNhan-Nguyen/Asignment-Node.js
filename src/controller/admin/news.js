@@ -18,9 +18,11 @@ const deleteNews = async (req, res, next) => {
   try {
     const { newsID } = req.params;
     const news = await News.findById(newsID);
-    fs.unlink("src/public/uploads/news/" + news.img, (err, data) => {
-      if (err);
-    });
+    if (news.img) {
+      fs.unlink("src/public/uploads/news/" + news.img, (err, data) => {
+        if (err);
+      });
+    }
     await News.findByIdAndRemove(newsID);
     return res.redirect("/admin/news");
   } catch (error) {
@@ -73,9 +75,11 @@ const updateNews = async (req, res, next) => {
     var img;
     if (file) {
       img = req.file.filename;
-      fs.unlink("src/public/uploads/news/" + foundNews.img, (err, data) => {
-        if (err) console.log(err);
-      });
+      if (foundNews.img) {
+        fs.unlink("src/public/uploads/news/" + foundNews.img, (err, data) => {
+          if (err) console.log(err);
+        });
+      }
     } else {
       img = foundNews.img;
     }

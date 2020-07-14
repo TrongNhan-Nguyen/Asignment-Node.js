@@ -16,10 +16,28 @@
     <div class="container">
       <!-- Form Add Admin -->
       <h2>Admin Profile</h2>
-      <form action="/admin/edit/<%-admin._id%>" method="POST">
+      <form
+        action="/admin/edit/<%-admin._id%>"
+        method="POST"
+        enctype="multipart/form-data"
+      >
         <!-- Account type -->
         <label for="type">Type Account:</label>
         <input class="form-control" name="type" value="Admin" readonly />
+        <div class="form-group">
+          <label for="img">Avatar:</label>
+          <input type="file" class="form-control-file" id="img" name="avatar" />
+          <!-- Preview Image -->
+          <div class="container d-flex justify-content-center">
+            <img
+              style="max-height: 250px; max-width: 100%; object-fit: contain;"
+              id="showImage"
+              class="border border-primary rounded-lg"
+              src="/uploads/avatar/<%-admin.img%>"
+              alt="Image"
+            />
+          </div>
+        </div>
         <!-- Admin full name -->
         <label for="name">Full Name:</label>
         <input
@@ -71,7 +89,7 @@
         <!-- Action for form -->
         <div
           class="row justify-content-center align-items-center"
-          style="margin-top: 20px;"
+          style="margin-top: 10px; margin-bottom: 10px;"
         >
           <button type="submit" class="btn btn-primary col-3">
             Submit
@@ -79,5 +97,19 @@
         </div>
       </form>
     </div>
+    <script>
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = (e) => {
+            $("#showImage").attr("src", e.target.result);
+          };
+          reader.readAsDataURL(input.files[0]);
+        }
+      }
+      $("#img").change(function () {
+        readURL(this);
+      });
+    </script>
   </body>
 </html>

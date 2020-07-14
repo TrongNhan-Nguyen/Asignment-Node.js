@@ -10,6 +10,8 @@ var isAdmin;
 const createAdmin = async (req, res, next) => {
   try {
     const admin = new User(req.body);
+    const file = req.file;
+
     const foundUser = await User.findOne({ email: admin.email });
     if (foundUser) {
       throw new Error("This email is already exists");
@@ -17,7 +19,7 @@ const createAdmin = async (req, res, next) => {
     const salt = await bcrypt.genSalt(10);
     const passHashed = await bcrypt.hash(admin.password, salt);
     admin.password = passHashed;
-    await admin.save();
+    (admin.img = file ? file.filename : ""), await admin.save();
     return res.redirect("/admin");
   } catch (err) {
     res.send(err.message);
@@ -195,9 +197,30 @@ const updateAdmin = async (req, res, next) => {
   try {
     const { adminID } = req.params;
     const admin = req.body;
+    const file = req.file;
+    const adminFound = await User.findById(adminID);
+    var img;
+    if (file) {
+      img = req.file.filename;
+      if (adminFound.img) {
+        fs.unlink(
+          "src/public/uploads/avatar/" + adminFound.img,
+          (err, data) => {
+            if (err) console.log(err);
+          }
+        );
+      }
+    } else {
+      img = adminFound.img;
+    }
     const salt = await bcrypt.genSalt(10);
     const passHashed = await bcrypt.hash(admin.password, salt);
-    admin.password = passHashed;
+    if (admin.password == adminFound.password) {
+      admin.password = adminFound.password;
+    } else {
+      admin.password = passHashed;
+    }
+    admin.img = img;
     await User.findByIdAndUpdate(adminID, admin);
     res.redirect("/admin");
   } catch (error) {
@@ -213,19 +236,25 @@ const updateStudent = async (req, res, next) => {
     var img;
     if (file) {
       img = req.file.filename;
-      fs.unlink(
-        "src/public/uploads/avatar/" + studentFound.img,
-        (err, data) => {
-          if (err) console.log(err);
-        }
-      );
+      if(studentFound.img){
+        fs.unlink(
+          "src/public/uploads/avatar/" + studentFound.img,
+          (err, data) => {
+            if (err) console.log(err);
+          }
+        );
+      }
     } else {
       img = studentFound.img;
     }
     const student = { ...req.body, img };
     const salt = await bcrypt.genSalt(10);
     const passHashed = await bcrypt.hash(student.password, salt);
-    student.password = passHashed;
+    if (student.password == studentFound.password) {
+      student.password == studentFound.password;
+    } else {
+      student.password = passHashed;
+    }
     await User.findByIdAndUpdate(studentID, student);
     res.redirect("/admin/student");
   } catch (err) {
