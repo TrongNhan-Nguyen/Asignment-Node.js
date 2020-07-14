@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <%- include('../partials/nav_admin.ejs') %>
+
+    <div style="padding-bottom: 20px;" class="container">
+      <h2 class="text-primary">Create Student</h2>
+      <form action="/admin/student/add" method="POST" enctype="multipart/form-data">
+        <!-- Image picker -->
+        <div class="form-group">
+          <label for="img">Image News:</label>
+          <input
+            type="file"
+            class="form-control-file"
+            id="img"
+            name="avatar"
+          />
+          <!-- Preview Image -->
+          <div class="container d-flex justify-content-center">
+            <img
+              style="max-height: 250px; max-width: 100%; object-fit: contain;"
+              id="showImage"
+              class="border border-primary rounded-lg"
+              src="#"
+              alt="Image"
+            />
+          </div>
+        </div>
+        <!-- Student Name -->
+        <div class="form-group row">
+          <label class="col-3 col-form-label" for="email">Full Name:</label>
+          <div class="col-9">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter name"
+              name="name"
+              required
+            />
+          </div>
+        </div>
+        <!-- Student Phone Number -->
+        <div class="form-group row">
+          <label class="col-3 col-form-label" for="PhoneNumber">Phone:</label>
+          <div class="col-9">
+            <input
+              type="text"
+              class="form-control"
+              pattern="^0\d*"
+              placeholder="Enter Phone Number"
+              name="phoneNumber"
+              maxlength="11"
+              minlength="10"
+              required
+            />
+          </div>
+        </div>
+        <!-- Student Email -->
+        <div class="form-group row">
+          <label class="col-3 col-form-label" for="email">Email:</label>
+          <div class="col-9">
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Enter Email"
+              name="email"
+              required
+            />
+          </div>
+        </div>
+        <!-- Student Password -->
+        <div class="form-group row">
+          <label class="col-3 col-form-label" for="pass">Password:</label>
+          <div class="col-9">
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              placeholder="Enter password"
+              name="password"
+              minlength="6"
+              required
+            />
+          </div>
+        </div>
+        <!-- Student Sex -->
+        <div class="form-group row">
+          <label class="col-3 col-form-label" for="sex">Sex:</label>
+          <div class="col-9">
+            <select class="form-control" name="sex">
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+          </div>
+        </div>
+        <!-- Student Specialized -->
+        <div class="form-group row">
+          <label class="col-3 col-form-label" for="specialized"
+            >Specialized:</label
+          >
+          <div class="col-9">
+            <select class="form-control" id="specialized" name="specialized">
+              <option>Application Software</option>
+              <option>Mobile Developer</option>
+              <option>Web Developer</option>
+            </select>
+          </div>
+          <!-- Student Sex -->
+        </div>
+        <!-- Student Class -->
+        <div class="form-group row">
+          <label class="col-3 col-form-label" for="class">Class:</label>
+          <div class="col-9">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter class"
+              name="class"
+              maxlength="8"
+              required
+            />
+          </div>
+        </div>
+        <!-- Date of birth -->
+        <div class="form-group row">
+          <label for="birthday" class="col-3 col-form-label">Birthday:</label>
+          <div class="col-9">
+            <input class="form-control" type="date" name="birthday" required />
+          </div>
+        </div>
+        <!-- Action for form -->
+        <div
+          class="row justify-content-center align-items-center"
+          style="margin-top: 20px;"
+        >
+          <button type="submit" class="btn btn-primary col-3">
+            Submit
+          </button>
+          <button
+            type="reset"
+            style="margin-left: 20px; margin-right: 20px;"
+            class="btn btn-primary col-3"
+            id="clear"
+          >
+            Clear
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary col-3"
+            data-dismiss="modal"
+          >
+            Close
+          </button>
+        </div>
+      </form>
+    </div>
+    <script>
+      $(document).ready(() => {
+        function readURL(input) {
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = (e) => {
+              $("#showImage").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+          }
+        }
+        $("#clear").click(() => {
+          $("#showImage").attr("src", null);
+        });
+        $("#img").change(function () {
+          readURL(this);
+        });
+      });
+    </script>
+  </body>
+</html>

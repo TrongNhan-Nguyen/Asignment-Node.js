@@ -1,4 +1,5 @@
 const News = require("../../model/News");
+const fs = require("fs");
 // Create News
 const createNews = async (req, res, next) => {
   try {
@@ -16,6 +17,10 @@ const createNews = async (req, res, next) => {
 const deleteNews = async (req, res, next) => {
   try {
     const { newsID } = req.params;
+    const news = await News.findById(newsID);
+    fs.unlink("src/public/uploads/news/" + news.img, (err, data) => {
+      if (err);
+    });
     await News.findByIdAndRemove(newsID);
     return res.redirect("/admin/news");
   } catch (error) {
@@ -65,10 +70,18 @@ const updateNews = async (req, res, next) => {
     const { newsID } = req.params;
     const foundNews = await News.findById(newsID);
     const file = req.file;
-
+    var img;
+    if (file) {
+      img = req.file.filename;
+      fs.unlink("src/public/uploads/news/" + foundNews.img, (err, data) => {
+        if (err) console.log(err);
+      });
+    } else {
+      img = foundNews.img;
+    }
     await News.findByIdAndUpdate(newsID, {
       ...req.body,
-      img: file ? req.file.filename : foundNews.img,
+      img,
     });
     return res.redirect("/admin/news");
   } catch (error) {

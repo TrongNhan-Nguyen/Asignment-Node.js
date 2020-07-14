@@ -28,7 +28,26 @@
        <!-- Tab profile -->
        <div id="Profile" class="container tab-pane active" >
         <h2 class="text-primary">Student's Profile</h2>
-        <form action="/admin/student/edit/<%-student._id%>" method="POST">
+        <form action="/admin/student/edit/<%-student._id%>" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="img">Avatar:</label>
+            <input
+              type="file"
+              class="form-control-file"
+              id="img"
+              name="avatar"
+            />
+            <!-- Preview Image -->
+            <div class="container d-flex justify-content-center">
+              <img
+                style="max-height: 250px; max-width: 100%; object-fit: contain;"
+                id="showImage"
+                class="border border-primary rounded-lg"
+                src="/uploads/avatar/<%-student.img%>"
+                alt="Image"
+              />
+            </div>
+          </div>
           <!-- Student Name -->
           <div class="form-group row">
             <label class="col-2 col-form-label" for="email">Full Name:</label>
@@ -150,7 +169,7 @@
           <!-- Action for form -->
           <div
             class="row justify-content-center align-items-center"
-            style="margin-top: 50px;"
+            style="margin-top: 20px;margin-bottom: 10px;"
           >
             <button type="submit" class="btn btn-primary col-5">
               Update Information
@@ -362,6 +381,18 @@
         var inputScores = $("#scores");
         var formEdit = $("#formEdit");
         var transcriptID,studentID,subjectID;
+        function readURL(input) {
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = (e) => {
+              $("#showImage").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+          }
+        }
+        $("#img").change(function () {
+          readURL(this);
+        });
         btnEdit.each(function(){
             $(this).click(function(){
               var index = $(this).attr("index");
@@ -381,8 +412,9 @@
           $(this).attr(
             "href",
             "/admin/student/transcript/"+ transcriptID +"/"+ subjectID + "?studentID=" + studentID);
-        })
+        });
       });
     </script>
+
   </body>
 </html>

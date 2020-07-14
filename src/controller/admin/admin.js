@@ -2,6 +2,7 @@ const Schedule = require("../../model/Schedule");
 const Subject = require("../../model/Subject");
 const Transcript = require("../../model/Transcript");
 const User = require("../../model/User");
+const fs = require("fs");
 const bcrypt = require("bcryptjs");
 var isAdmin;
 
@@ -26,6 +27,7 @@ const createAdmin = async (req, res, next) => {
 const createStudent = async (req, res, next) => {
   try {
     const student = new User(req.body);
+    const file = req.file;
     const foundUser = await User.findOne({ email: student.email });
     if (foundUser) {
       throw new Error("This email is already exists");
@@ -42,6 +44,7 @@ const createStudent = async (req, res, next) => {
       password: passHashed,
       transcript: transcript._id,
       schedule: schedule._id,
+      img: file ? file.filename : "",
     });
     res.redirect("/admin/student");
   } catch (err) {
@@ -81,6 +84,11 @@ const deleteStudent = async (req, res, next) => {
     const schedule = await Schedule.findOne({ owner: student._id });
     await transcript.remove();
     await schedule.remove();
+    if (student.img) {
+      fs.unlink("src/public/uploads/avatar/" + student.img, (err, data) => {
+        if (err) console.log(err);
+      });
+    }
     await student.remove();
     res.redirect("/admin/student");
   } catch (err) {
@@ -99,6 +107,14 @@ const deleteSubjectTranscript = async (req, res, next) => {
     return res.redirect("/admin/student/edit/" + studentID);
   } catch (error) {
     return res.send(error.message);
+  }
+};
+// Form add student
+const formAddStudent = async (req, res, next) => {
+  try {
+    return res.render("admin/add_student");
+  } catch (err) {
+    return res.send(err.message);
   }
 };
 // Get Admin
@@ -192,7 +208,21 @@ const updateAdmin = async (req, res, next) => {
 const updateStudent = async (req, res, next) => {
   try {
     const { studentID } = req.params;
-    const student = req.body;
+    const studentFound = await User.findById(studentID);
+    const file = req.file;
+    var img;
+    if (file) {
+      img = req.file.filename;
+      fs.unlink(
+        "src/public/uploads/avatar/" + studentFound.img,
+        (err, data) => {
+          if (err) console.log(err);
+        }
+      );
+    } else {
+      img = studentFound.img;
+    }
+    const student = { ...req.body, img };
     const salt = await bcrypt.genSalt(10);
     const passHashed = await bcrypt.hash(student.password, salt);
     student.password = passHashed;
@@ -235,6 +265,7 @@ module.exports = {
   createSubjectTranscript,
   deleteStudent,
   deleteSubjectTranscript,
+  formAddStudent,
   getAdmin,
   getListAdmin,
   getListStudent,
