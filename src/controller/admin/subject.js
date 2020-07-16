@@ -26,19 +26,17 @@ const getListSubject = async (req, res, next) => {
   try {
     const { user } = req.session;
     if (user && user.type === "Admin") {
-      console.log(user);
-      const page = parseInt(req.query.page);
-      const query = parseInt(req.query.page) || 0;
-      await Subject.find({})
-        .sort("subjectID")
-        .limit(5)
-        .skip(5 * page)
-        .exec((err, data) => {
-          if (err) {
-            return res.send(err.message);
-          }
-          return res.render("admin/subject", { data, query });
-        });
+      const page = parseInt(req.query.page) || 1;
+      const name = req.query.name || '';
+      const data = [... await Subject.find({ name: {$regex: new RegExp(name), $options: 'i'}}).sort("subjectID")];
+      const subjectsAll = [... await Subject.find({})];
+      const subjectName = [];
+      subjectsAll.forEach(item=> subjectName.push(item.name));
+      const perPage =  5 ;
+      const startSlice = (page - 1) * perPage;
+      const endSlice = page * perPage;
+      const maxPage = Math.ceil(data.length / perPage);
+      return res.render("admin/subject", { data: data.slice(startSlice,endSlice) , maxPage,page,subjectName }); 
     } else {
       res.send("Page not found");
     }

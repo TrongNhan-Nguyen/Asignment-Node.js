@@ -21,7 +21,7 @@ const addSubject = async (req, res, next) => {
       scheduleID = user.schedule;
       transcriptID = user.transcript;
     }
-   
+
     const schedule = await Schedule.findById(scheduleID).populate(
       "subjects.subject"
     );
@@ -34,10 +34,11 @@ const addSubject = async (req, res, next) => {
         return (check = true);
       }
     });
-    if (check){
-      if(isMobile) return res.status(201).send("You have passed or studying this subject");
-      return res.send("You have passed or studying this subject")
-    };
+    if (check) {
+      if (isMobile)
+        return res.status(201).send("You have passed or studying this subject");
+      return res.send("You have passed or studying this subject");
+    }
 
     const subjectTranscript = {
       subject: subject.subject,
@@ -48,7 +49,10 @@ const addSubject = async (req, res, next) => {
     schedule.subjects.push(subject);
     await schedule.save();
     await transcript.save();
-    if(isMobile) return res.status(200).send("Registration successfully you can check your schedule now");
+    if (isMobile)
+      return res
+        .status(200)
+        .send("Registration successfully you can check your schedule now");
     return res.redirect("/student/schedule");
   } catch (error) {
     return res.send(error.message);
@@ -57,30 +61,37 @@ const addSubject = async (req, res, next) => {
 // Change Password
 const changePassword = async (req, res, next) => {
   try {
-  
     const { currentPass, password } = req.body;
     const isMobile = req.header("Accept").includes("application/json");
     var studentID, passwordUser;
-    if(user){
+    if (user) {
       studentID = user._id;
-      passwordUser =user.password;
-    }else{
+      passwordUser = user.password;
+    } else {
       studentID = req.query.studentID;
       const user = await User.findById(studentID);
       passwordUser = user.password;
     }
-    
+
     const student = await User.findById(studentID);
-    const checkPass = await bcrypt.compare(currentPass,passwordUser );
+    const checkPass = await bcrypt.compare(currentPass, passwordUser);
     if (checkPass) {
       const salt = await bcrypt.genSalt(10);
       const passHashed = await bcrypt.hash(password, salt);
       student.password = passHashed;
       await student.save();
-      if(isMobile) return res.status(200).send("Your password has been changed successfully!");
+      if (isMobile)
+        return res
+          .status(200)
+          .send("Your password has been changed successfully!");
       return res.redirect("/student/profile");
     }
-    if(isMobile) return res.status(201).send("Your password is not correctly, if you forget your password, please contact to admin");
+    if (isMobile)
+      return res
+        .status(201)
+        .send(
+          "Your password is not correctly, if you forget your password, please contact to admin"
+        );
     return res.send(
       "Your password is not correctly, if you forget your password, please contact to admin"
     );
@@ -147,7 +158,10 @@ const registration = async (req, res, next) => {
     );
     const data = semester.subjects;
     if (isMobile) return res.status(200).send(data);
-    return res.render("student/registration", { data, user });
+    if(user && user.type == "Admin"){
+      return res.render("student/registration", { data, user });
+    }
+    return res.send('Page not found');
   } catch (error) {
     return res.send(error.message);
   }

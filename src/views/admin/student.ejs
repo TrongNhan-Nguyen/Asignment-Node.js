@@ -24,8 +24,19 @@
             ><i style="color: blue;" class="fas fa-plus"></i></span
         ></a>
       </div>
+      <!-- Search -->
+      <input
+        class="form-control"
+        id="search"
+        type="text"
+        placeholder="Search..."
+      />
       <!-- Table list Students -->
-      <table style="margin-top: 10px;" class="table table-bordered table-hover">
+      <table
+        style="margin-top: 10px;"
+       
+        class="table table-bordered table-hover"
+      >
         <!-- Header table -->
         <thead class="thead-dark">
           <tr>
@@ -38,7 +49,7 @@
           </tr>
         </thead>
         <!-- Body table -->
-        <tbody>
+        <tbody  id="tableStudent">
           <% data.forEach((item,index)=>{ %>
           <tr>
             <td><%-(index+1)%></td>
@@ -103,18 +114,27 @@
       </div>
     </div>
     <script>
-      var data = <%-JSON.stringify(data)%>;
-      var title = document.getElementById("studentName");
-      var submitDelete = document.getElementById("deleteStudent");
-      var student;
-      function getStudent(index) {
-        student = data[index];
-        title.innerHTML = "Are you sure you want to delete student: '" +
-        student.name + "' with email: " + student.email + " ? you can not recovery this student!";
-      }
-      function deleteStudent(){
-        submitDelete.href = "/admin/student/delete/"+student._id;
-      }
+        var data = <%-JSON.stringify(data)%>;
+        var search = $('#search');
+        var tableStudent = $('#tableStudent tr');
+        var title = document.getElementById("studentName");
+        var submitDelete = document.getElementById("deleteStudent");
+        var student;
+
+        search.on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            tableStudent.filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+        function getStudent(index) {
+          student = data[index];
+          title.innerHTML = "Are you sure you want to delete student: '" +
+          student.name + "' with email: " + student.email + " ? you can not recovery this student!";
+        }
+        function deleteStudent(){
+          submitDelete.href = "/admin/student/delete/"+student._id;
+        }
     </script>
   </body>
 </html>

@@ -36,7 +36,6 @@ const createStudent = async (req, res, next) => {
     }
     const salt = await bcrypt.genSalt(10);
     const passHashed = await bcrypt.hash(student.password, salt);
-    // student.password = passHashed;
     await student.save();
     const transcript = new Transcript({ owner: student._id });
     const schedule = new Schedule({ owner: student._id });
@@ -114,7 +113,8 @@ const deleteSubjectTranscript = async (req, res, next) => {
 // Form add student
 const formAddStudent = async (req, res, next) => {
   try {
-    return res.render("admin/add_student");
+    if(isAdmin) return res.render("admin/add_student");
+    return res.send('Page not found');
   } catch (err) {
     return res.send(err.message);
   }

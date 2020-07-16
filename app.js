@@ -14,7 +14,7 @@ const port = 3000;
 app.set("view engine", "ejs");
 app.set("views", "src/views");
 app.use(
-  session({ secret: "mySecret", resave: false, saveUninitialized: false })
+  session({ secret: "PS10674", resave: false, saveUninitialized: false })
 );
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -32,6 +32,8 @@ mongoose
   })
   .then(() => console.log("Connection to MongoDB successfully"))
   .catch((err) => console.log(err));
+
+
 
 app.listen(port, () =>
   console.log(`App listening on http://localhost:${port}`)
