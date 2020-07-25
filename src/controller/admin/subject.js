@@ -25,7 +25,7 @@ const deleteSubject = async (req, res, next) => {
 const getListSubject = async (req, res, next) => {
   try {
     const { user } = req.session;
-    if (user && user.type === "Admin") {
+    if (user && (user.type==="Admin" || user.type==="Lecturer")) {
       const page = parseInt(req.query.page) || 1;
       const name = req.query.name || '';
       const data = [... await Subject.find({ name: {$regex: new RegExp(name), $options: 'i'}}).sort("subjectID")];
@@ -36,7 +36,7 @@ const getListSubject = async (req, res, next) => {
       const startSlice = (page - 1) * perPage;
       const endSlice = page * perPage;
       const maxPage = Math.ceil(data.length / perPage);
-      return res.render("admin/subject", { data: data.slice(startSlice,endSlice) , maxPage,page,subjectName }); 
+      return res.render("admin/subject", { data: data.slice(startSlice,endSlice) , maxPage,page,subjectName,user }); 
     } else {
       res.send("Page not found");
     }

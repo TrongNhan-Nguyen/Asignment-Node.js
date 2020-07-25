@@ -12,7 +12,7 @@
     <script src="/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <%- include('../partials/nav_admin.ejs') %>
+    <%- include('../partials/nav_admin.ejs',{user}) %>
     <div class="container">
       <!-- Form Add Admin -->
       <h2>Admin Profile</h2>
@@ -23,7 +23,7 @@
       >
         <!-- Account type -->
         <label for="type">Type Account:</label>
-        <input class="form-control" name="type" value="Admin" readonly />
+        <input class="form-control" name="type" value="<%-admin.type%>" readonly />
         <div class="form-group">
           <label for="img">Avatar:</label>
           <input type="file" class="form-control-file" id="img" name="avatar" />

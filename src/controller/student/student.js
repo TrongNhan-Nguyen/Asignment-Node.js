@@ -122,7 +122,6 @@ const home = async (req, res, next) => {
       const learning = await News.find({ type: "Learning" });
       const activities = await News.find({ type: "Activities" });
       const fees = await News.find({ type: "Fees" });
-
       return res.render("student/home", { learning, activities, fees, user });
     }
     return res.send("Page not found");
@@ -158,7 +157,7 @@ const registration = async (req, res, next) => {
     );
     const data = semester.subjects;
     if (isMobile) return res.status(200).send(data);
-    if(user && user.type == "Admin"){
+    if(user && user.type == "Student"){
       return res.render("student/registration", { data, user });
     }
     return res.send('Page not found');

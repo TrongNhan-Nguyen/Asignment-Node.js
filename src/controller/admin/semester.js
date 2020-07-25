@@ -1,6 +1,7 @@
 // Get list semester;
 const Subject = require("../../model/Subject");
 const Semester = require("../../model/Semester");
+var user;
 const createSemester = async (req, res, next) => {
   try {
     const { name, subjects } = req.body;
@@ -15,7 +16,7 @@ const createSemester = async (req, res, next) => {
 const formAdd = async (req, res, next) => {
   try {
     const subjects = await Subject.find({}).sort("name");
-    res.render("admin/add_semester", { subjects });
+    res.render("admin/add_semester", { subjects,user });
   } catch (err) {
     res.send(err.message);
   }
@@ -24,13 +25,13 @@ const getListSemester = async (req, res, next) => {
   try {
     const semesters = await Semester.find({}).sort("name");
     const { semesterID } = req.params;
-    const {user} = req.session;
-    if( user && user.type==="Admin"){
+    user = req.session.user;
+    if( user && (user.type==="Admin" || user.type==="Lecturer")){
       if (semesterID) {
         const semester = await Semester.findById(semesterID).populate("subjects");
-        return res.render("admin/semester", { semesters, semester });
+        return res.render("admin/semester", { semesters, semester,user });
       } 
-       return res.render("admin/semester", { semesters });
+       return res.render("admin/semester", { semesters,user });
     
     }
     return res.send("Page not found")
@@ -45,7 +46,7 @@ const getSemester = async (req, res, next) => {
     const { semesterID } = req.params;
     const subjects = await Subject.find({}).sort("name");
     const semester = await Semester.findById(semesterID).populate("subjects");
-    res.render("admin/edit_semester", { semester, subjects });
+    res.render("admin/edit_semester", { semester, subjects,user });
   } catch (err) {
     res.send(err.message);
   }

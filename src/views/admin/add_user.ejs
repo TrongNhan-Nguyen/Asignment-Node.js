@@ -12,11 +12,11 @@
     <script src="/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <%- include('../partials/nav_admin.ejs') %>
+    <%- include('../partials/nav_admin.ejs',{user:user}) %>
 
     <div style="padding-bottom: 20px;" class="container">
-      <h2 class="text-primary">Create Student</h2>
-      <form action="/admin/student/add" method="POST" enctype="multipart/form-data">
+      <h2 class="text-primary">Create User</h2>
+      <form action="/admin/user/add" method="POST" enctype="multipart/form-data">
         <!-- Image picker -->
         <div class="form-group">
           <label for="img">Image News:</label>
@@ -37,7 +37,17 @@
             />
           </div>
         </div>
-        <!-- Student Name -->
+        <!-- Account Type -->
+        <div class="form-group row">
+          <label class="col-3 col-form-label" for="type">User Type:</label>
+          <div class="col-9">
+            <select class="form-control" id="type" name="type">
+              <option>Lecturer</option>
+              <option>Student</option>
+            </select>
+          </div>
+        </div>
+        <!-- User Name -->
         <div class="form-group row">
           <label class="col-3 col-form-label" for="email">Full Name:</label>
           <div class="col-9">
@@ -94,7 +104,7 @@
             />
           </div>
         </div>
-        <!-- Student Sex -->
+        <!-- User's Sex -->
         <div class="form-group row">
           <label class="col-3 col-form-label" for="sex">Sex:</label>
           <div class="col-9">
@@ -104,8 +114,22 @@
             </select>
           </div>
         </div>
-        <!-- Student Specialized -->
-        <div class="form-group row">
+        <!-- Teaching Subject -->
+        <div id="subject" class="form-group row">
+          <label class="col-3 col-form-label" for="subject"
+            >Teaching Subject:</label
+          >
+          <div class="col-9">
+            <select class="form-control" id="subject" name="subject">
+              <% data.forEach((item)=>{ %>
+              <option><%-item.name%></option>
+              <% }); %>
+             
+            </select>
+          </div>
+        </div>
+        <!-- Student's Specialized -->
+        <div id="specialized" class="form-group row">
           <label class="col-3 col-form-label" for="specialized"
             >Specialized:</label
           >
@@ -116,10 +140,9 @@
               <option>Web Developer</option>
             </select>
           </div>
-          <!-- Student Sex -->
         </div>
         <!-- Student Class -->
-        <div class="form-group row">
+        <div id="class" class="form-group row">
           <label class="col-3 col-form-label" for="class">Class:</label>
           <div class="col-9">
             <input
@@ -127,6 +150,7 @@
               class="form-control"
               placeholder="Enter class"
               name="class"
+              id="class"
               maxlength="8"
               required
             />
@@ -144,9 +168,8 @@
           class="row justify-content-center align-items-center"
           style="margin-top: 20px;"
         >
-          <button type="submit" class="btn btn-primary col-3">
-            Submit
-          </button>
+          <input type="submit" class="btn btn-primary col-3" value="Submit">
+          
           <button
             type="reset"
             style="margin-left: 20px; margin-right: 20px;"
@@ -155,18 +178,37 @@
           >
             Clear
           </button>
-          <button
-            type="button"
-            class="btn btn-primary col-3"
-            data-dismiss="modal"
-          >
-            Close
-          </button>
         </div>
       </form>
     </div>
     <script>
       $(document).ready(() => {
+        var type = $("select#type");
+        var studentClass = $("div#class");
+        var specialized = $("div#specialized");
+        var subject = $("div#subject");
+        studentClass.hide();
+        specialized.hide();
+        $("input#class").prop('disabled', true);
+        $("select#specialized").prop('disabled', true);
+        type.on("change",function(){
+            if($(this).val() == "Lecturer"){
+              subject.show();
+              studentClass.hide();
+              specialized.hide();
+              $("select#subject").prop('disabled', false);
+              $("input#class").prop('disabled', true);
+              $("select#specialized").prop('disabled', true);
+            }else{
+              studentClass.show();
+              specialized.show();
+              subject.hide();
+              $("select#subject").prop('disabled', true);
+              $("input#class").prop('disabled', false);
+              $("select#specialized").prop('disabled', false);
+            }
+        })
+
         function readURL(input) {
           if (input.files && input.files[0]) {
             var reader = new FileReader();

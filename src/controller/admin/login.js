@@ -28,14 +28,16 @@ const getUser = async (req, res, next) => {
     if (user) {
       const checkPass = await bcrypt.compare(password, user.password);
       if (checkPass) {
-        if (user.type === "Student") {
+        if (user.type == "Student") {
           if (isMobile) {
             return res.status(200).send(user);
           };
           return res.redirect("/student");
         }
         if (isMobile) return res.status(201).send({});
-        return res.redirect("/admin");
+        if(user.type=="Admin")return res.redirect("/admin");
+        return res.redirect("/admin/news");
+        
       }
       if (isMobile) return res.status(202).send({});
       return res.send("Password incorrect");

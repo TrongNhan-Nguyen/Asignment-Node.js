@@ -4,7 +4,8 @@ const Transcript = require("../../model/Transcript");
 const User = require("../../model/User");
 const fs = require("fs");
 const bcrypt = require("bcryptjs");
-var isAdmin;
+const session = require("express-session");
+var isAdmin, user;
 
 // Crete Admin
 const createAdmin = async (req, res, next) => {
@@ -26,28 +27,36 @@ const createAdmin = async (req, res, next) => {
   }
 };
 // Create student
-const createStudent = async (req, res, next) => {
+const createUser = async (req, res, next) => {
   try {
-    const student = new User(req.body);
+    const user = new User(req.body);
     const file = req.file;
-    const foundUser = await User.findOne({ email: student.email });
+    var img;
+    const foundUser = await User.findOne({ email: user.email });
     if (foundUser) {
       throw new Error("This email is already exists");
     }
     const salt = await bcrypt.genSalt(10);
-    const passHashed = await bcrypt.hash(student.password, salt);
-    await student.save();
-    const transcript = new Transcript({ owner: student._id });
-    const schedule = new Schedule({ owner: student._id });
+    const passHashed = await bcrypt.hash(user.password, salt);
+    if(file){
+      img = file.filename;
+    }else{
+      img = "";
+    }
+    user.password = passHashed;
+    user.img = img;
+    await user.save();
+    if (user.type == "Lecturer") {
+      return res.redirect("/admin/user");
+    }
+    const transcript = new Transcript({ owner: user._id });
+    const schedule = new Schedule({ owner: user._id });
     await transcript.save();
     await schedule.save();
-    await student.update({
-      password: passHashed,
-      transcript: transcript._id,
-      schedule: schedule._id,
-      img: file ? file.filename : "",
-    });
-    res.redirect("/admin/student");
+    user.transcript = transcript._id;
+    user.schedule = schedule._id;
+    await user.save();
+    return res.redirect("/admin/user");
   } catch (err) {
     res.send(err.message);
   }
@@ -71,27 +80,30 @@ const createSubjectTranscript = async (req, res, next) => {
       );
     transcript.subjects.push(subject);
     await transcript.save();
-    return res.redirect("/admin/student/edit/" + studentID);
+    return res.redirect("/admin/user/edit/" + studentID);
   } catch (error) {
     return res.send(error.message);
   }
 };
 // Delete student
-const deleteStudent = async (req, res, next) => {
+const deleteUser = async (req, res, next) => {
   try {
-    const { studentID } = req.params;
-    const student = await User.findById(studentID);
-    const transcript = await Transcript.findOne({ owner: student._id });
-    const schedule = await Schedule.findOne({ owner: student._id });
-    await transcript.remove();
-    await schedule.remove();
-    if (student.img) {
-      fs.unlink("src/public/uploads/avatar/" + student.img, (err, data) => {
+    const { userID } = req.params;
+    const user = await User.findById(userID);
+    await user.remove();
+    if (user.img) {
+      fs.unlink("src/public/uploads/avatar/" + user.img, (err, data) => {
         if (err) console.log(err);
       });
     }
-    await student.remove();
-    res.redirect("/admin/student");
+    if(user.type == "Lecturer"){
+     return res.redirect("/admin/user");
+    }
+    const transcript = await Transcript.findOne({ owner: user._id });
+    const schedule = await Schedule.findOne({ owner: user._id });
+    await transcript.remove();
+    await schedule.remove();
+    return res.redirect("/admin/user");
   } catch (err) {
     res.send(err.message);
   }
@@ -105,16 +117,22 @@ const deleteSubjectTranscript = async (req, res, next) => {
     const subjectFound = transcript.subjects.id(subjectID);
     subjectFound.remove();
     await transcript.save();
-    return res.redirect("/admin/student/edit/" + studentID);
+    return res.redirect("/admin/user/edit/" + studentID);
   } catch (error) {
     return res.send(error.message);
   }
 };
 // Form add student
-const formAddStudent = async (req, res, next) => {
+const formAddUser = async (req, res, next) => {
   try {
-    if(isAdmin) return res.render("admin/add_student");
+    if(isAdmin) {
+      const data = await Subject.find({})
+      .select({ name: 1, _id: 0 })
+      .sort("name");
+      return res.render("admin/add_user", { data,user });
+    };
     return res.send('Page not found');
+   
   } catch (err) {
     return res.send(err.message);
   }
@@ -122,10 +140,11 @@ const formAddStudent = async (req, res, next) => {
 // Get Admin
 const getAdmin = async (req, res, next) => {
   try {
-    const user = req.session.user;
-    if (user && user.type === "Admin") {
+    user = req.session.user;
+
+    if (user.type == "Admin" || user.type=="Lecturer") {
       const admin = await User.findById(user._id);
-      return res.render("admin/edit_admin", { admin });
+      return res.render("admin/edit_admin", { admin ,user});
     }
     return res.send("Page not found");
   } catch (error) {
@@ -135,24 +154,25 @@ const getAdmin = async (req, res, next) => {
 // Get list admin
 const getListAdmin = async (req, res, next) => {
   try {
-    const user = req.session.user;
-    if (user && user.type === "Admin") {
-      isAdmin = true;
-      const data = await User.find({ type: "Admin" });
-      return res.render("admin/home", { data });
+     user = req.session.user;
+    if (user && user.type == "Student") {
+      isAdmin = false;
+      return res.send("Page not found");
     }
-    isAdmin = false;
-    return res.send("Page not found");
+    isAdmin = true;
+    const data = await User.find({ type: "Admin" });
+    return res.render("admin/home", { data,user });
   } catch (err) {
     next(err);
   }
 };
 // Get list student
-const getListStudent = async (req, res, next) => {
+const getListUser = async (req, res, next) => {
   try {
     if (isAdmin) {
-      const data = await User.find({ type: "Student" });
-      return res.render("admin/student", { data });
+      const studentList = await User.find({ type: "Student" });
+      const lecturerList = await User.find({ type: "Lecturer" });
+      return res.render("admin/user", { studentList,lecturerList,user });
     }
     return res.send("Page not found");
   } catch (err) {
@@ -160,23 +180,26 @@ const getListStudent = async (req, res, next) => {
   }
 };
 // Get information student
-const getStudent = async (req, res, next) => {
+const getUser = async (req, res, next) => {
   try {
-    const { studentID } = req.params;
+    const { userID } = req.params;
     const subjects = await Subject.find({}).sort("name");
-    const student = await User.findById(studentID);
-    const transcriptID = student.transcript;
+    const userUpdate = await User.findById(userID);
+    if(userUpdate.type == "Lecturer"){
+      return res.render("admin/edit_user", {user,subjects,userUpdate});
+    }
+    const transcriptID = userUpdate.transcript;
     const transcript = await Transcript.findById(transcriptID).populate({
       path: "subjects.subject",
     });
-
-    res.render("admin/edit_student", {
-      student,
+    return res.render("admin/edit_user", {
+      userUpdate,
       transcript: transcript.subjects,
       subjects,
+      user,
     });
   } catch (err) {
-    res.render(err);
+    return res.render(err);
   }
 };
 // Get script
@@ -228,35 +251,35 @@ const updateAdmin = async (req, res, next) => {
   }
 };
 // Update student
-const updateStudent = async (req, res, next) => {
+const updateUser = async (req, res, next) => {
   try {
-    const { studentID } = req.params;
-    const studentFound = await User.findById(studentID);
+    const { userID } = req.params;
+    const userFound = await User.findById(userID);
     const file = req.file;
     var img;
     if (file) {
       img = req.file.filename;
-      if(studentFound.img){
+      if (userFound.img) {
         fs.unlink(
-          "src/public/uploads/avatar/" + studentFound.img,
+          "src/public/uploads/avatar/" + userFound.img,
           (err, data) => {
             if (err) console.log(err);
           }
         );
       }
     } else {
-      img = studentFound.img;
+      img = userFound.img;
     }
-    const student = { ...req.body, img };
+    const user = { ...req.body, img };
     const salt = await bcrypt.genSalt(10);
-    const passHashed = await bcrypt.hash(student.password, salt);
-    if (student.password == studentFound.password) {
-      student.password == studentFound.password;
+    const passHashed = await bcrypt.hash(user.password, salt);
+    if (user.password == userFound.password) {
+      user.password == userFound.password;
     } else {
-      student.password = passHashed;
+      user.password = passHashed;
     }
-    await User.findByIdAndUpdate(studentID, student);
-    res.redirect("/admin/student");
+    await User.findByIdAndUpdate(userID, user);
+    res.redirect("/admin/user");
   } catch (err) {
     res.send(err.message);
   }
@@ -282,7 +305,7 @@ const updateSubjectTranscript = async (req, res, next) => {
       throw new Error("Subject : " + subjectUpdate.name + " is already exists");
     subjectFound.set({ ...req.body, subject: subjectUpdate._id });
     await transcript.save();
-    return res.redirect("/admin/student/edit/" + studentID);
+    return res.redirect("/admin/user/edit/" + studentID);
   } catch (error) {
     return res.send(error.message);
   }
@@ -290,17 +313,17 @@ const updateSubjectTranscript = async (req, res, next) => {
 
 module.exports = {
   createAdmin,
-  createStudent,
+  createUser,
   createSubjectTranscript,
-  deleteStudent,
+  deleteUser,
   deleteSubjectTranscript,
-  formAddStudent,
+  formAddUser,
   getAdmin,
   getListAdmin,
-  getListStudent,
-  getStudent,
+  getListUser,
+  getUser,
   getScript,
   updateAdmin,
-  updateStudent,
+  updateUser,
   updateSubjectTranscript,
 };

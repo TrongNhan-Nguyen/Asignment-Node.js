@@ -39,11 +39,12 @@ router.get("/semester", semesterController.getListSemester);
 router.get("/semester/formAdd", semesterController.formAdd);
 router.get("/semester/:semesterID", semesterController.getListSemester);
 router.get("/semester/edit/:semesterID", semesterController.getSemester);
+// User
+router.get("/user", adminController.getListUser);
+router.get("/user/add", adminController.formAddUser);
+router.get("/user/edit/:userID", adminController.getUser);
+router.get("/user/delete/:userID", adminController.deleteUser);
 // Student
-router.get("/student", adminController.getListStudent);
-router.get("/student/add", adminController.formAddStudent);
-router.get("/student/edit/:studentID", adminController.getStudent);
-router.get("/student/delete/:studentID", adminController.deleteStudent);
 router.get("/student/transcript/:transcriptID", adminController.getScript);
 router.get(
   "/student/transcript/:transcriptID/:subjectID",
@@ -68,17 +69,18 @@ router.post(
 // Semester
 router.post("/semester/add", semesterController.createSemester);
 router.post("/semester/edit/:semesterID", semesterController.updateSemester);
+// User
+router.post(
+  "/user/add",
+  avatar.single("avatar"),
+  adminController.createUser
+);
+router.post(
+  "/user/edit/:userID",
+  avatar.single("avatar"),
+  adminController.updateUser
+);
 // Student
-router.post(
-  "/student/add",
-  avatar.single("avatar"),
-  adminController.createStudent
-);
-router.post(
-  "/student/edit/:studentID",
-  avatar.single("avatar"),
-  adminController.updateStudent
-);
 router.post(
   "/student/transcript/edit/:transcriptID",
   adminController.createSubjectTranscript

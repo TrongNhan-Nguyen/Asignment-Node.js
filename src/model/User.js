@@ -14,8 +14,11 @@ const UserSchema = new Schema(
     password: { type: String, required: true, minlength: 6 },
     type: {
       type: String,
-      enum: ["Admin", "Student"],
+      enum: ["Admin","Lecturer" ,"Student"],
       default: "Student",
+    },
+    subject:{
+      type:String,
     },
     schedule:{
       type: Schema.Types.ObjectId,

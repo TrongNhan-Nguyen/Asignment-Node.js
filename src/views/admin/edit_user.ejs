@@ -12,23 +12,26 @@
     <script src="/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <%- include('../partials/nav_admin.ejs') %>
+    <%- include('../partials/nav_admin.ejs',{user:user}) %>
     <div class="container">
     <!-- Nav tab -->
       <ul class="nav nav-tabs">
         <li class="nav-item">
           <a class="nav-link active" data-toggle="tab" href="#Profile">Profile</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" href="#Transcripts">Transcripts</a>
-        </li>
+        <!-- If student render tab transcript -->
+        <% if(locals.transcript){%> 
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#Transcripts">Transcripts</a>
+          </li>  
+        <%};%>
       </ul>
       <!-- Tab content -->
      <div class="tab-content">
        <!-- Tab profile -->
        <div id="Profile" class="container tab-pane active" >
-        <h2 class="text-primary">Student's Profile</h2>
-        <form action="/admin/student/edit/<%-student._id%>" method="POST" enctype="multipart/form-data">
+        <h2 class="text-primary">User's Profile</h2>
+        <form action="/admin/user/edit/<%-userUpdate._id%>" method="POST" enctype="multipart/form-data">
           <!-- Picker image -->
           <div class="form-group">
             <label for="img">Avatar:</label>
@@ -44,12 +47,12 @@
                 style="max-height: 250px; max-width: 100%; object-fit: contain;"
                 id="showImage"
                 class="border border-primary rounded-lg"
-                src="/uploads/avatar/<%-student.img%>"
+                src="/uploads/avatar/<%-userUpdate.img%>"
                 alt="Image"
               />
             </div>
           </div>
-          <!-- Student Name -->
+          <!-- User Name -->
           <div class="form-group row">
             <label class="col-2 col-form-label" for="email">Full Name:</label>
             <div class="col-9">
@@ -58,12 +61,12 @@
                 class="form-control"
                 placeholder="Enter name"
                 name="name"
-                value="<%-student.name%>"
+                value="<%-userUpdate.name%>"
                 required
               />
             </div>
           </div>
-          <!-- Student Phone Number -->
+          <!-- User Phone Number -->
           <div class="form-group row">
             <label class="col-2 col-form-label" for="PhoneNumber">Phone:</label>
             <div class="col-9">
@@ -73,14 +76,14 @@
                 pattern="^0\d*"
                 placeholder="Enter Phone Number"
                 name="phoneNumber"
-                value="<%-student.phoneNumber%>"
+                value="<%-userUpdate.phoneNumber%>"
                 maxlength="11"
                 minlength="10"
                 required
               />
             </div>
           </div>
-          <!-- Student Email -->
+          <!-- User Email -->
           <div class="form-group row">
             <label class="col-2 col-form-label" for="email">Email:</label>
             <div class="col-9">
@@ -89,12 +92,12 @@
                 class="form-control"
                 placeholder="Enter Email"
                 name="email"
-                value="<%-student.email%>"
+                value="<%-userUpdate.email%>"
                 required
               />
             </div>
           </div>
-          <!-- Student Password -->
+          <!-- User Password -->
           <div class="form-group row">
             <label class="col-2 col-form-label" for="pass">Password:</label>
             <div class="col-9">
@@ -104,56 +107,78 @@
                 id="password"
                 placeholder="Enter password"
                 name="password"
-                value="<%-student.password%>"
+                value="<%-userUpdate.password%>"
                 minlength="6"
                 required
               />
             </div>
           </div>
-          <!-- Student Sex -->
+          <!-- User Sex -->
           <div class="form-group row">
             <label class="col-2 col-form-label" for="sex">Sex:</label>
             <div class="col-9">
               <select class="form-control" id="sex" name="sex">
                 <% var options =["Male","Female"]; 
                 options.forEach((item)=>{ 
-                var selected = (item === student.sex) ? "selected" : ""; %>
+                var selected = (item === userUpdate.sex) ? "selected" : ""; %>
                 <option <%-selected%>> <%-item%> </option>
                 <%});%>
               </select>
             </div>
           </div>
+          <!-- Teaching Subject -->
+          <% if(userUpdate.type == "Lecturer"){%>  
+            <div class="form-group row" id="subject">
+              <label class="col-2 col-form-label" for="subject"
+                >Teaching Subject:</label
+              >
+              <div class="col-9">
+                <select class="form-control" id="subject" name="subject">
+                  <%  subjects.forEach((item)=>{ 
+                      var selected = (item.name === userUpdate.subject) ? "selected" : ""; %>
+                  <option <%-selected%> > <%-item.name%> </option>
+                  <%});%>
+                </select>
+              </div>
+            </div>
+          <%};%>
           <!-- Student Specialized -->
-          <div class="form-group row">
-            <label class="col-2 col-form-label" for="specialized"
-              >Specialized:</label
-            >
-            <div class="col-9">
-              <select class="form-control" id="specialized" name="specialized">
-                <% 
-                var options = ["Application Software","Mobile Developer","WebDeveloper"]; 
-                options.forEach((item)=>{ 
-                var selected = (item === student.specialized) ? "selected" : ""; %>
-                <option <%-selected%> > <%-item%> </option>
-                <%});%>
-              </select>
+          <% if(userUpdate.type == "Student") {%>
+            <div class="form-group row" id="specialized">
+              <label class="col-2 col-form-label" for="specialized"
+                >Specialized:</label
+              >
+              <div class="col-9">
+                <select class="form-control" id="specialized" name="specialized">
+                  <% 
+                  var options = ["Application Software","Mobile Developer","WebDeveloper"]; 
+                  options.forEach((item)=>{ 
+                  var selected = (item === userUpdate.specialized) ? "selected" : ""; %>
+                  <option <%-selected%> > <%-item%> </option>
+                  <%});%>
+                </select>
+              </div>
             </div>
-          </div>
+          <%};%>
           <!-- Student Class -->
-          <div class="form-group row">
-            <label class="col-2 col-form-label" for="class">Class:</label>
-            <div class="col-9">
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Enter class"
-                name="class"
-                maxlength="8"
-                value="<%-student.class%>"
-                required
-              />
+          <% if(userUpdate.type == "Student") {%>
+            <div class="form-group row" id="class">
+              <label class="col-2 col-form-label" for="class">Class:</label>
+              <div class="col-9">
+                <input
+                  type="text"
+                  id="class"
+                  class="form-control"
+                  placeholder="Enter class"
+                  name="class"
+                  maxlength="8"
+                  value="<%-userUpdate.class%>"
+                  required
+                  
+                />
+              </div>
             </div>
-          </div>
+            <%};%>
           <!-- Date of birth -->
           <div class="form-group row">
             <label for="birthday" class="col-2 col-form-label">Birthday:</label>
@@ -162,7 +187,7 @@
                 class="form-control"
                 type="date"
                 name="birthday"
-                value="<%-student.birthday%>"
+                value="<%-userUpdate.birthday%>"
                 required
               />
             </div>
@@ -205,21 +230,24 @@
             </thead>
             <!-- Table body -->
             <tbody>
-              <% transcript.forEach((item,index)=>{%>  
-                <tr>
-                  <td><%-(index+1)%></td>
-                  <td><%-item.subject.subjectID%></td>
-                  <td><%-item.subject.name%></td>
-                  <td><%-item.subject.credits%></td>
-                  <td><%-item.scores%></td>
-                  <td><%-item.status%></td>
-                  <td>
-                    <a href="#" data-toggle="modal" class="btnEdit" data-target="#editSubject" index=<%-index%>
-                      ><i style="color: red;" class="fas fa-edit"></i
-                    ></a>
-                  </td>
-                </tr>
-                <% }); %>
+              <% if(userUpdate.type == "Student"){%>
+                <% transcript.forEach((item,index)=>{%>  
+                  <tr>
+                    <td><%-(index+1)%></td>
+                    <td><%-item.subject.subjectID%></td>
+                    <td><%-item.subject.name%></td>
+                    <td><%-item.subject.credits%></td>
+                    <td><%-item.scores%></td>
+                    <td><%-item.status%></td>
+                    <td>
+                      <a href="#" data-toggle="modal" class="btnEdit" data-target="#editSubject" index=<%-index%>
+                        ><i style="color: red;" class="fas fa-edit"></i
+                      ></a>
+                    </td>
+                  </tr>
+                  <% }); %>
+              <%};%>
+             
             </tbody>
           </table>
         </div>
@@ -239,8 +267,8 @@
           </div>
           <!-- Modal body -->
           <div class="modal-body">
-            <!-- Form Add Admin -->
-            <form action="/admin/student/transcript/edit/<%-student.transcript%>?studentID=<%-student._id%>" method="POST">
+            <!-- Form Add Subject Transcript -->
+            <form action="/admin/student/transcript/edit/<%-userUpdate.transcript%>?studentID=<%-userUpdate._id%>" method="POST">
               <!-- Select Subject -->
               <select class="form-control" id="subjects" name="subject">
                 <option disabled selected value>
@@ -375,8 +403,20 @@
     </div>
     <script>
       $(document).ready(()=>{
-        var transcript = <%-JSON.stringify(transcript)%> ;
-        var student = <%-JSON.stringify(student)%>;
+        var userUpdate = <%-JSON.stringify(userUpdate)%>;
+        var inputClass = $("input#class");
+        var selectSpecialized = $("select#specialized");
+        var selectSubject = $("select#subject");
+
+        if(userUpdate.type == "Lecturer"){
+          selectSubject.prop("disabled",false);
+          inputClass.prop("disabled",true);
+          selectSpecialized.prop("disabled",true);
+        }else{
+          selectSubject.prop("disabled",true);
+          inputClass.prop("disabled",false);
+          selectSpecialized.prop("disabled",false);
+        }
         var btnEdit = $(".btnEdit");
         var btnDelete = $("#btnDelete");
         var inputScores = $("#scores");
@@ -394,12 +434,17 @@
         $("#img").change(function () {
           readURL(this);
         });
-        btnEdit.each(function(){
+       
+       
+
+        <% if(locals.transcript){ %>
+          var transcript = <%-JSON.stringify(transcript)%>;
+          btnEdit.each(function(){
             $(this).click(function(){
               var index = $(this).attr("index");
               var subject = transcript[index];
-              transcriptID = student.transcript;
-              studentID = student._id;
+              transcriptID = userUpdate.transcript;
+              studentID = userUpdate._id;
               subjectID = subject._id;
               inputScores.val(subject.scores);
               $("#statusEdit option[value=" + subject.status +"]").prop("selected",true);
@@ -414,6 +459,8 @@
             "href",
             "/admin/student/transcript/"+ transcriptID +"/"+ subjectID + "?studentID=" + studentID);
         });
+        <%};%>
+       
       });
     </script>
 
