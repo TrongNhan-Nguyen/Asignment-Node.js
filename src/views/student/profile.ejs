@@ -32,7 +32,6 @@
                     max-width: 100%;
                     object-fit: contain;
                   "
-                  id="showImage"
                   class="border border-primary rounded-lg"
                   src="/uploads/avatar/<%-student.img%>"
                   alt="Image"
@@ -163,7 +162,7 @@
       <!-- End body warper -->
     </div>
 
-    <!--  Modal Change Password -->
+    <!--  Modal Change Password and avatar-->
     <div class="modal" id="changePassword">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -177,7 +176,32 @@
 
           <!-- Modal body -->
           <div class="modal-body">
-            <form action="/student/profile" id="changePass" method="POST">
+            <form action="/student/profile" id="changePass" method="POST" enctype="multipart/form-data">
+              <!-- Image picker -->
+              <div class="form-group">
+                <label for="img">Avatar:</label>
+                <input
+                  type="file"
+                  class="form-control-file"
+                  id="img"
+                  name="avatar"
+                />
+                <!-- Preview Image -->
+                <div class="container d-flex justify-content-center">
+                  <img
+                    style="
+                      max-height: 150px;
+                      max-width: 100%;
+                      margin-top: 10px;
+                      object-fit: contain;
+                    "
+                    id="showImage"
+                    class="border border-primary rounded-lg"
+                    src="/uploads/avatar/<%-student.img%>"
+                    alt="Image"
+                  />
+                </div>
+              </div>
               <!-- Current Password -->
               <div class="form-group row">
                 <label class="col-4 col-form-label" for="class"
@@ -269,6 +293,21 @@
         var confirm = $("#confirmPass");
         var form = $("#changePass");
         var validate = $("#validate");
+        // Read url
+        function readURL(input) {
+          if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = (e) => {
+              $("#showImage").attr("src", e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+          }
+        }
+        // Change image
+          $("#img").change(function () {
+            readURL(this);
+        });
+        // Submit form
         form.submit(function () {
           if (newPass.val() !== confirm.val()) {
             validate.text("Confirm password doesn't match");

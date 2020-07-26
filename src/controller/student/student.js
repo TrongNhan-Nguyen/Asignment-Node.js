@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const fs = require("fs");
 const News = require("../../model/News");
 const Schedule = require("../../model/Schedule");
 const Semester = require("../../model/Semester");
@@ -58,47 +59,7 @@ const addSubject = async (req, res, next) => {
     return res.send(error.message);
   }
 };
-// Change Password
-const changePassword = async (req, res, next) => {
-  try {
-    const { currentPass, password } = req.body;
-    const isMobile = req.header("Accept").includes("application/json");
-    var studentID, passwordUser;
-    if (user) {
-      studentID = user._id;
-      passwordUser = user.password;
-    } else {
-      studentID = req.query.studentID;
-      const user = await User.findById(studentID);
-      passwordUser = user.password;
-    }
 
-    const student = await User.findById(studentID);
-    const checkPass = await bcrypt.compare(currentPass, passwordUser);
-    if (checkPass) {
-      const salt = await bcrypt.genSalt(10);
-      const passHashed = await bcrypt.hash(password, salt);
-      student.password = passHashed;
-      await student.save();
-      if (isMobile)
-        return res
-          .status(200)
-          .send("Your password has been changed successfully!");
-      return res.redirect("/student/profile");
-    }
-    if (isMobile)
-      return res
-        .status(201)
-        .send(
-          "Your password is not correctly, if you forget your password, please contact to admin"
-        );
-    return res.send(
-      "Your password is not correctly, if you forget your password, please contact to admin"
-    );
-  } catch (error) {
-    return res.send(error.message);
-  }
-};
 // Get News's details
 const getNews = async (req, res, next) => {
   try {
@@ -272,14 +233,73 @@ const transcript = async (req, res, next) => {
     return res.send(error.message);
   }
 };
+// Update Profile
+const updateProfile = async (req, res, next) => {
+  try {
+    const { currentPass, password } = req.body;
+    const isMobile = req.header("Accept").includes("application/json");
+    var studentID, passwordUser,img;
+    const file = req.file;
+    if (user) {
+      studentID = user._id;
+      passwordUser = user.password;
+    } else {
+      studentID = req.query.studentID;
+      user = await User.findById(studentID);
+      passwordUser = user.password;
+    }
+    if(file){
+      if(user.img){
+        fs.unlink(
+          "src/public/uploads/avatar/" + user.img,
+          (err, data) => {
+            if (err) console.log(err);
+          }
+        );
+      }
+      img = file.filename;
+    }else{
+      img = user.img;
+    }
 
+    const student = await User.findById(studentID);
+    const checkPass = await bcrypt.compare(currentPass, passwordUser);
+    if (checkPass) {
+      const salt = await bcrypt.genSalt(10);
+      const passHashed = await bcrypt.hash(password, salt);
+      student.password = passHashed;
+      student.img = img;
+      await student.save();
+      if (isMobile){
+        user = null;
+        return res
+          .status(200)
+          .send("Your password has been changed successfully!");
+      }
+        
+      return res.redirect("/student/profile");
+    }
+    if (isMobile)
+      return res
+        .status(201)
+        .send(
+          "Your password is not correctly, if you forget your password, please contact to admin"
+        );
+    return res.send(
+      "Your password is not correctly, if you forget your password, please contact to admin"
+    );
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
 module.exports = {
   addSubject,
-  changePassword,
   getNews,
   home,
   profile,
   registration,
   schedule,
   transcript,
+  updateProfile,
+
 };
