@@ -37,23 +37,23 @@ mongoose
   .then(() => console.log("Connection to MongoDB successfully"))
   .catch((err) => console.log(err));
 /* Test nodemailer */
-// const transporter =  nodemailer.createTransport({
-//   service: "smtp.gmail.com",
-//   port: 465,
-//   secure: true, // upgrade later with STARTTLS
-//   auth: {
-//     user: "trasmail377@gmai..com",
-//     pass: "nhan320377"
-//   }
-// });
-// // verify connection configuration
-// transporter.verify(function(error, success) {
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log("Server is ready to take our messages");
-//   }
-// });
+const transporter =  nodemailer.createTransport({
+  service: "smtp.gmail.com",
+  port: 465,
+  secure: true, // upgrade later with STARTTLS
+  auth: {
+    user: "trasmail377@gmai..com",
+    pass: "nhan320377"
+  }
+});
+// verify connection configuration
+transporter.verify(function(error, success) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Server is ready to take our messages");
+  }
+});
 /* End nodemailer */
 
 app.listen(process.env.PORT || port, () =>
