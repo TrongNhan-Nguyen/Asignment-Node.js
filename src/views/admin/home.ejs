@@ -31,122 +31,7 @@
             style="background-color: white;"
             ><i style="color: blue;" class="fas fa-plus"></i></span
         ></a>
-        <!-- Modal add admin -->
-        <div class="modal" id="myModal">
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <!-- Modal Header -->
-              <div class="modal-header">
-                <h4 class="modal-title">ADD ADMIN</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                  &times;
-                </button>
-              </div>
-              <!-- Modal body -->
-              <div class="modal-body">
-                <!-- Form Add Admin -->
-                <form action="/admin/add" method="POST" enctype="multipart/form-data">
-                  <!-- Account type -->
-                  <label for="type">Type Account:</label>
-                  <input
-                    class="form-control"
-                    name="type"
-                    value="Admin"
-                    readonly
-                  />
-                  <!-- Image picker -->
-                  <div class="form-group">
-                    <label for="img">Avatar:</label>
-                    <input
-                      type="file"
-                      class="form-control-file"
-                      id="img"
-                      name="avatar"
-                    />
-                    <!-- Preview Image -->
-                    <div class="container d-flex justify-content-center">
-                      <img
-                        style="
-                          max-height: 250px;
-                          max-width: 100%;
-                          object-fit: contain;
-                        "
-                        id="showImage"
-                        class="border border-primary rounded-lg"
-                        src="#"
-                        alt="Image"
-                      />
-                    </div>
-                  </div>
-                  <!-- Admin full name -->
-                  <label for="name">Full Name:</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    placeholder="Enter username"
-                    name="name"
-                    required
-                  />
-                  <!-- Admin email -->
-                  <label for="email">Email:</label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    placeholder="Enter Email"
-                    name="email"
-                    required
-                  />
-                  <!-- Admin phone number -->
-                  <label for="phoneNumber">Phone Number-(0xxxxxxxxx):</label>
-                  <input
-                    type="tel"
-                    pattern="^0\d*"
-                    class="form-control"
-                    placeholder="Enter Phone Number"
-                    name="phoneNumber"
-                    maxlength="11"
-                    minlength="10"
-                    required
-                  />
-                  <!-- Admin password -->
-                  <label for="pass">Password:</label>
-                  <input
-                    type="password"
-                    class="form-control"
-                    id="password"
-                    placeholder="Enter password"
-                    name="password"
-                    minlength="6"
-                    required
-                  />
-                  <!-- Action for form -->
-                  <div
-                    class="row justify-content-center align-items-center"
-                    style="margin-top: 20px;"
-                  >
-                    <button type="submit" class="btn btn-primary col-3">
-                      Submit
-                    </button>
-                    <button
-                      type="reset"
-                      style="margin-left: 20px; margin-right: 20px;"
-                      class="btn btn-primary col-3"
-                    >
-                      Clear
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-primary col-3"
-                      data-dismiss="modal"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
       <!-- Table list admins -->
       <table style="margin-top: 10px;" class="table table-bordered table-hover">
@@ -171,6 +56,122 @@
           <%});%>
         </tbody>
       </table>
+      <!-- Modal add admin -->
+      <div class="modal" id="myModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <h4 class="modal-title">ADD ADMIN</h4>
+              <button type="button" class="close" data-dismiss="modal">
+                &times;
+              </button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+              <!-- Form Add Admin -->
+              <form action="/admin/add" method="POST" enctype="multipart/form-data">
+                <!-- Account type -->
+                <label for="type">Type Account:</label>
+                <input
+                  class="form-control"
+                  name="type"
+                  value="Admin"
+                  readonly
+                />
+                <!-- Image picker -->
+                <div class="form-group">
+                  <label for="img">Avatar:</label>
+                  <input
+                    type="file"
+                    class="form-control-file"
+                    id="img"
+                    name="avatar"
+                  />
+                  <!-- Preview Image -->
+                  <div class="container d-flex justify-content-center">
+                    <img
+                      style="
+                        max-height: 250px;
+                        max-width: 100%;
+                        object-fit: contain;
+                      "
+                      id="showImage"
+                      class="border border-primary rounded-lg"
+                      src="#"
+                      alt="Image"
+                    />
+                  </div>
+                </div>
+                <!-- Admin full name -->
+                <label for="name">Full Name:</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Enter username"
+                  name="name"
+                  required
+                />
+                <!-- Admin email -->
+                <label for="email">Email:</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  placeholder="Enter Email"
+                  name="email"
+                  required
+                />
+                <!-- Admin phone number -->
+                <label for="phoneNumber">Phone Number-(0xxxxxxxxx):</label>
+                <input
+                  type="tel"
+                  pattern="^0\d*"
+                  class="form-control"
+                  placeholder="Enter Phone Number"
+                  name="phoneNumber"
+                  maxlength="11"
+                  minlength="10"
+                  required
+                />
+                <!-- Admin password -->
+                <label for="pass">Password:</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  placeholder="Enter password"
+                  name="password"
+                  minlength="6"
+                  required
+                />
+                <!-- Action for form -->
+                <div
+                  class="row justify-content-center align-items-center"
+                  style="margin-top: 20px;"
+                >
+                  <button type="submit" class="btn btn-primary col-3">
+                    Submit
+                  </button>
+                  <button
+                    type="reset"
+                    style="margin-left: 20px; margin-right: 20px;"
+                    class="btn btn-primary col-3"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary col-3"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <script>
       $(document).ready(() => {

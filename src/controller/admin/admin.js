@@ -5,8 +5,18 @@ const User = require("../../model/User");
 const fs = require("fs");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
-var isAdmin, user;
+const nodemailer = require("nodemailer");
+const { parse } = require("json2csv");
+const csv = require("csvtojson");
 
+var isAdmin, user;
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "trasmail377@gmail.com",
+    pass: "nhan320377",
+  },
+});
 // Crete Admin
 const createAdmin = async (req, res, next) => {
   try {
@@ -38,9 +48,9 @@ const createUser = async (req, res, next) => {
     }
     const salt = await bcrypt.genSalt(10);
     const passHashed = await bcrypt.hash(user.password, salt);
-    if(file){
+    if (file) {
       img = file.filename;
-    }else{
+    } else {
       img = "";
     }
     user.password = passHashed;
@@ -96,8 +106,8 @@ const deleteUser = async (req, res, next) => {
         if (err) console.log(err);
       });
     }
-    if(user.type == "Lecturer"){
-     return res.redirect("/admin/user");
+    if (user.type == "Lecturer") {
+      return res.redirect("/admin/user");
     }
     const transcript = await Transcript.findOne({ owner: user._id });
     const schedule = await Schedule.findOne({ owner: user._id });
@@ -122,17 +132,55 @@ const deleteSubjectTranscript = async (req, res, next) => {
     return res.send(error.message);
   }
 };
+// Export data to csv
+const exportData = async (req, res) => {
+  try {
+    if (isAdmin == true) {
+      const { type } = req.query;
+      const data = await User.find(
+        { type },
+        {
+          name: 1,
+          email: 1,
+          password: 1,
+          _id: 0,
+          phoneNumber: 1,
+          address: 1,
+          sex: 1,
+          type: 1,
+          birthday: 1,
+        }
+      );
+      const fields = [
+        "name",
+        "email",
+        "password",
+        "phoneNumber",
+        "address",
+        "sex",
+        "type",
+        "birthday",
+      ];
+      const opts = { fields };
+      const csv = parse(data, opts);
+      await fs.writeFileSync("./src/public/uploads/file/" + type + ".csv", csv);
+      return res.redirect("/admin/user");
+    }
+    return res.send("Page not found");
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
 // Form add student
 const formAddUser = async (req, res, next) => {
   try {
-    if(isAdmin) {
+    if (isAdmin) {
       const data = await Subject.find({})
-      .select({ name: 1, _id: 0 })
-      .sort("name");
-      return res.render("admin/add_user", { data,user });
-    };
-    return res.send('Page not found');
-   
+        .select({ name: 1, _id: 0 })
+        .sort("name");
+      return res.render("admin/add_user", { data, user });
+    }
+    return res.send("Page not found");
   } catch (err) {
     return res.send(err.message);
   }
@@ -142,9 +190,9 @@ const getAdmin = async (req, res, next) => {
   try {
     user = req.session.user;
 
-    if (user.type == "Admin" || user.type=="Lecturer") {
+    if (user.type == "Admin" || user.type == "Lecturer") {
       const admin = await User.findById(user._id);
-      return res.render("admin/edit_admin", { admin ,user});
+      return res.render("admin/edit_admin", { admin, user });
     }
     return res.send("Page not found");
   } catch (error) {
@@ -154,14 +202,14 @@ const getAdmin = async (req, res, next) => {
 // Get list admin
 const getListAdmin = async (req, res, next) => {
   try {
-     user = req.session.user;
+    user = req.session.user;
     if (user && user.type == "Student") {
       isAdmin = false;
       return res.send("Page not found");
     }
     isAdmin = true;
     const data = await User.find({ type: "Admin" });
-    return res.render("admin/home", { data,user });
+    return res.render("admin/home", { data, user });
   } catch (err) {
     next(err);
   }
@@ -170,9 +218,21 @@ const getListAdmin = async (req, res, next) => {
 const getListUser = async (req, res, next) => {
   try {
     if (isAdmin) {
+      const users = await User.find({}, { email: 1, type: 1, _id: 0 });
       const studentList = await User.find({ type: "Student" });
       const lecturerList = await User.find({ type: "Lecturer" });
-      return res.render("admin/user", { studentList,lecturerList,user });
+      const emailList = [];
+      users.forEach((item) => {
+        if (item.type != "Admin") {
+          emailList.push(item.email);
+        }
+      });
+      return res.render("admin/user", {
+        studentList,
+        lecturerList,
+        user,
+        emailList,
+      });
     }
     return res.send("Page not found");
   } catch (err) {
@@ -185,8 +245,8 @@ const getUser = async (req, res, next) => {
     const { userID } = req.params;
     const subjects = await Subject.find({}).sort("name");
     const userUpdate = await User.findById(userID);
-    if(userUpdate.type == "Lecturer"){
-      return res.render("admin/edit_user", {user,subjects,userUpdate});
+    if (userUpdate.type == "Lecturer") {
+      return res.render("admin/edit_user", { user, subjects, userUpdate });
     }
     const transcriptID = userUpdate.transcript;
     const transcript = await Transcript.findById(transcriptID).populate({
@@ -211,6 +271,92 @@ const getScript = async (req, res, next) => {
     });
 
     console.log(transcript.subjects);
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
+// Import data from file csv
+const importData = async (req, res) => {
+  try {
+    if (isAdmin) {
+      const { file } = req;
+      const csvFilePath = "./src/public/uploads/file/" + file.filename;
+      const fileImport = await csv().fromFile(csvFilePath);
+      await User.insertMany(fileImport);
+      return res.redirect("/admin/user");
+    }
+    return res.send("Page not found");
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
+// Send email
+const sendEmail = async (req, res) => {
+  try {
+    const body = req.body;
+    const bodyEmail = body.email.split(",");
+    const users = await User.find({}, { email: 1, type: 1, _id: 0 });
+    const file = req.file;
+    var attachments;
+    var emailList = [];
+    var tempArray = [];
+    var setEmail;
+    var who = body.to;
+
+    if (file) {
+      attachments = [
+        {
+          filename: file.filename,
+          content: fs.createReadStream(
+            "./src/public/uploads/file/" + file.filename
+          ),
+        },
+      ];
+    } else {
+      attachments = [];
+    }
+
+    switch (who) {
+      case "all":
+        users.forEach((item) => {
+          if (item.type != "Admin") {
+            emailList.push(item.email);
+          }
+        });
+        break;
+      case "students":
+        users.forEach((item) => {
+          if (item.type == "Student") {
+            tempArray.push(item.email);
+          }
+        });
+        emailList = tempArray.concat(bodyEmail);
+        break;
+      case "lecturers":
+        users.forEach((item) => {
+          if (item.type == "Lecturer") {
+            tempArray.push(item.email);
+          }
+        });
+        emailList = tempArray.concat(bodyEmail);
+        break;
+      default:
+        emailList = bodyEmail;
+        break;
+    }
+
+    setEmail = new Set(emailList);
+    setEmail.delete("");
+    emailList = Array.from(setEmail);
+    const mailOptions = {
+      from: "Admin",
+      to: emailList,
+      subject: body.title,
+      text: body.content,
+      attachments,
+    };
+    await transporter.sendMail(mailOptions);
+    return res.redirect("/admin/user");
   } catch (error) {
     return res.send(error.message);
   }
@@ -260,12 +406,9 @@ const updateUser = async (req, res, next) => {
     if (file) {
       img = req.file.filename;
       if (userFound.img) {
-        fs.unlink(
-          "src/public/uploads/avatar/" + userFound.img,
-          (err, data) => {
-            if (err) console.log(err);
-          }
-        );
+        fs.unlink("src/public/uploads/avatar/" + userFound.img, (err, data) => {
+          if (err) console.log(err);
+        });
       }
     } else {
       img = userFound.img;
@@ -317,12 +460,15 @@ module.exports = {
   createSubjectTranscript,
   deleteUser,
   deleteSubjectTranscript,
+  exportData,
   formAddUser,
   getAdmin,
   getListAdmin,
   getListUser,
   getUser,
   getScript,
+  importData,
+  sendEmail,
   updateAdmin,
   updateUser,
   updateSubjectTranscript,

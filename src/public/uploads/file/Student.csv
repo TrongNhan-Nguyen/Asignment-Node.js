@@ -1,0 +1,5 @@
+"name","email","password","phoneNumber","address","sex","type","birthday"
+"Nguyễn Trọng Nhân","nhanntps10674@fpt.edu.vn","$2a$10$M92278AMrFGutIMG9J9tuu.brsUy4jNXYxHgYGOxdQCjNdAmHdboi","0999999999",,"Male","Student","1994-05-19"
+"Nguyễn Thị Kim Ngân","ngan@gmail.com","$2a$10$KWKoOH3iedXDIEeVQDA9eur9ZMdtYmkfDnNAIlJx6mCMFY8aT.Wv2","0888888888",,"Female","Student","2000-05-07"
+"Tran Quoc Hao","hao@gmail.com","$2a$10$iZaoUhwgn77I4/wmQWvlIeqAcfaLlPVyij2PsnxLNUfHSYxKqsXMm","0888888888",,"Male","Student","2020-01-01"
+"Bùi Duy Lâm","lam@gmail.com","$2a$10$n/mW4kLBZCxGdw6TEgNHUuL7P1CRfAHTnaE.cBVxY3J8eni.6Fqdu","0666666666",,"Male","Student","1998-02-02"

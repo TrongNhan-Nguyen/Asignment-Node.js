@@ -22,8 +22,17 @@ const storageAvatar = multer.diskStorage({
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
+const storageFile = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "src/public/uploads/file");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
 const news = multer({ storage: storageNews });
 const avatar = multer({ storage: storageAvatar });
+const file = multer({ storage: storageFile });
 
 /*--------GET--------*/
 // Admin
@@ -44,6 +53,7 @@ router.get("/user", adminController.getListUser);
 router.get("/user/add", adminController.formAddUser);
 router.get("/user/edit/:userID", adminController.getUser);
 router.get("/user/delete/:userID", adminController.deleteUser);
+router.get("/user/export", adminController.exportData);
 // Student
 router.get("/student/transcript/:transcriptID", adminController.getScript);
 router.get(
@@ -57,8 +67,12 @@ router.get("/subject/delete/:subjectID", subjectController.deleteSubject);
 
 /*--------POST--------*/
 // Admin
-router.post("/add",  avatar.single("avatar"),adminController.createAdmin);
-router.post("/edit/:adminID",avatar.single("avatar"), adminController.updateAdmin);
+router.post("/add", avatar.single("avatar"), adminController.createAdmin);
+router.post(
+  "/edit/:adminID",
+  avatar.single("avatar"),
+  adminController.updateAdmin
+);
 // News
 router.post("/news/add", news.single("img"), newsController.createNews);
 router.post(
@@ -70,16 +84,14 @@ router.post(
 router.post("/semester/add", semesterController.createSemester);
 router.post("/semester/edit/:semesterID", semesterController.updateSemester);
 // User
-router.post(
-  "/user/add",
-  avatar.single("avatar"),
-  adminController.createUser
-);
+router.post("/user/add", avatar.single("avatar"), adminController.createUser);
 router.post(
   "/user/edit/:userID",
   avatar.single("avatar"),
   adminController.updateUser
 );
+router.post("/user/sendEmail", file.single("file"), adminController.sendEmail);
+router.post("/user/import", file.single("file"), adminController.importData);
 // Student
 router.post(
   "/student/transcript/edit/:transcriptID",
