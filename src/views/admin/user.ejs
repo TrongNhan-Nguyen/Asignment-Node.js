@@ -161,7 +161,8 @@
                   <a
                     href="#modalDelete"
                     data-toggle="modal"
-                    onclick="getStudent('<%-index%>')"
+                    name="deleteStudent"
+                    value="<%-index%>"
                   >
                     <i style="color: red;" class="fas fa-archive"></i
                   ></a>
@@ -229,7 +230,8 @@
                   <a
                     href="#modalDelete"
                     data-toggle="modal"
-                    onclick="getLecturer('<%-index%>')"
+                    name=deleteLecturer
+                    value="<%-index%>"
                   >
                     <i style="color: red;" class="fas fa-archive"></i
                   ></a>
@@ -405,13 +407,12 @@
           >
             <a
               style="margin-right: 10px;"
-              id="deleteStudent"
-              onclick="deleteStudent()"
+              id="deleteUser"
               class="btn btn-danger col-3"
             >
               DELETE
             </a>
-            <a type="button" class="btn btn-danger col-3" data-dismiss="modal">
+            <a style="color: white;" class="btn btn-danger col-3" data-dismiss="modal">
               Close
             </a>
           </div>
@@ -473,7 +474,7 @@
     </div>
     <script>
       $(document).ready(()=>{
-        var studentList = <%-JSON.stringify(studentList)%>;
+      var studentList = <%-JSON.stringify(studentList)%>;
       var emailList = <%-JSON.stringify(emailList)%>;
       var lecturerList = <%-JSON.stringify(lecturerList)%>;
       var searchStudent = $('#searchStudent');
@@ -483,7 +484,6 @@
       var showEmail = $("#showEmail");
       var inputEmail = $("input[name=email]");
       var formSendEmail = $("#formSendEmail");
-
       var title = document.getElementById("studentName");
       var submitDelete = document.getElementById("deleteStudent");
       var user;
@@ -507,15 +507,25 @@
         title.innerHTML = "Are you sure you want to delete student: '" +
         user.name + "' with email: " + user.email + " ? you can not recovery this student!";
       }
-      function getLecturer(index) {
-        user = lecturerList[index];
-        console.log(user);
-        title.innerHTML = "Are you sure you want to delete lecturer: '" +
-        user.name + "' with email: " + user.email + " ? you can not recovery this lecturer!";
-      }
-      function deleteStudent(){
-        submitDelete.href = "/admin/user/delete/"+user._id;
-      }
+      $("a[name=deleteStudent]").each(function(){
+        $(this).click(function(){
+          var index = $(this).attr("value");
+          user = studentList[index];
+          title.innerHTML = "Are you sure you want to delete student: '" +
+          user.name + "' with email: " + user.email + " ? you can not recovery this User!";
+          $("a#deleteUser").attr("href","/admin/user/delete/"+user._id);
+        })
+      })
+      $("a[name=deleteLecturer]").each(function(){
+        $(this).click(function(){
+          var index = $(this).attr("value");
+          user = lecturerList[index];
+          title.innerHTML = "Are you sure you want to delete lecturer: '" +
+          user.name + "' with email: " + user.email + " ? you can not recovery this User!";
+          $("a#deleteUser").attr("href","/admin/user/delete/"+user._id);
+        })
+      })
+   
       /*-----Auto complete-----*/
       function autocomplete(inp, arr) {
         /*the autocomplete function takes two arguments,

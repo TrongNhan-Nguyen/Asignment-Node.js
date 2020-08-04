@@ -52,6 +52,8 @@ router.get("/semester/edit/:semesterID", semesterController.getSemester);
 router.get("/user", adminController.getListUser);
 router.get("/user/add", adminController.formAddUser);
 router.get("/user/edit/:userID", adminController.getUser);
+router.get("/user/email/", adminController.getListEmail);
+router.get("/user/email/:emailID", adminController.getEmail);
 router.get("/user/delete/:userID", adminController.deleteUser);
 router.get("/user/export", adminController.exportData);
 // Student

@@ -37,7 +37,6 @@ const getUser = async (req, res, next) => {
         if (isMobile) return res.status(201).send({});
         if(user.type=="Admin")return res.redirect("/admin");
         return res.redirect("/admin/news");
-        
       }
       if (isMobile) return res.status(202).send({});
       return res.send("Password incorrect");

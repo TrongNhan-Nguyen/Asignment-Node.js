@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/sb-admin-2.min.css" />
+    <link rel="stylesheet" href="/css/fonts-admin2.css" />
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <div id="wrapper">
+      <%- include('../partials/nav_student.ejs',{name: user.name}) %>
+      <!-- Body wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column mt-4">
+        <!-- Main Content -->
+        <div id="content">
+          <div class="container">
+            <h3 style="margin-bottom: 20px;" class="text-primary">
+              Email list
+            </h3>
+            <!-- Row email -->
+            <% data.forEach((item)=>{
+                var color = (item.active == true)? 'white' : 'lavender'; 
+            %>
+              <a href="/student/email/<%-item._id%>" class="button">
+                <div
+                style="
+                  background-color: <%-color%>;
+                  box-sizing: border-box;
+                  padding: 10px;
+                  border-radius: 10px;
+                  margin-bottom: 10px;
+                "
+              >
+                <div class="row justify-content-center align-items-center">
+                  <span style="font-size: large;" class="col-2"><%-item.from%></span>
+                  <span style="font-size: large;" class="col-8"><%-item.title%></span>
+                  <span
+                    style="
+                      font-style: italic;
+                      text-align: right;
+                      font-size: small;
+                    "
+                    class="col-2"
+                    ><%-item.pubDate%></span
+                  >
+                </div>
+              </div>
+              </a>
+            <%});%>
+            <!-- Form show profile -->
+          </div>
+          <!-- Modal change password -->
+        </div>
+      </div>
+      <!-- End body warper -->
+    </div>
+
+    <!-- Script for file -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+    <script src="/js/popper.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    =
+  </body>
+</html>

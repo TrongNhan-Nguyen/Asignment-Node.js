@@ -5,7 +5,8 @@ const Schedule = require("../../model/Schedule");
 const Semester = require("../../model/Semester");
 const Transcript = require("../../model/Transcript");
 const User = require("../../model/User");
-var user;
+var user,
+  notActive = 0;
 // Add subject to schedule
 const addSubject = async (req, res, next) => {
   try {
@@ -59,7 +60,68 @@ const addSubject = async (req, res, next) => {
     return res.send(error.message);
   }
 };
+// Get email
+const getEmail = async (req, res) => {
+  try {
+    const isMobile = req.header("Accept").includes("application/json");
+    const { emailID } = req.params;
+    var email,index,userFound,length;
 
+    if(user){
+      userFound = await User.findById(user._id);
+      length = user.inbox.length;
+    }else{
+      const {userID} = req.query;
+      userFound = await User.findById(userID);
+      length = userFound.inbox.length;
+    }
+
+    for (var i = 0; i < length; i++) {
+      var temp = user ? user.inbox[i] : userFound.inbox[i];
+      if (temp._id == emailID) {
+        email = temp;
+        index = i;
+        break;
+      }
+    }
+    
+    if (userFound.inbox[index].active == false) {
+      userFound.inbox[index].active = true;
+      await userFound.save();
+      notActive = 0;
+    }
+    userFound.inbox.forEach((item) => {
+      if (item.active == false) {
+        notActive++;
+      }
+    });
+    if(isMobile)return res.send("Activated this email");
+    user = userFound;
+    return res.render("student/get_email", { user, notActive, email });
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
+// Get List email
+const getListEmail = async (req, res) => {
+  try {
+    const isMobile = req.header("Accept").includes("application/json");
+    var data;
+    if(user){
+      data = user.inbox;
+    }else{
+      const {userID} = req.query;
+      const userFound = await User.findById(userID);
+      data = userFound.inbox;
+    }
+
+    if(isMobile)return res.send(data);
+    
+    return res.render("student/email", { user, notActive, data });
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
 // Get News's details
 const getNews = async (req, res, next) => {
   try {
@@ -67,7 +129,7 @@ const getNews = async (req, res, next) => {
     const { newsID } = req.params;
     const news = await News.findById(newsID);
     if (isMobile) return res.status(200).send(news);
-    return res.render("student/get_news", { news, user });
+    return res.render("student/get_news", { news, user, notActive });
   } catch (error) {
     return res.send(error.message);
   }
@@ -78,12 +140,25 @@ const home = async (req, res, next) => {
     const isMobile = req.header("Accept").includes("application/json");
     const news = await News.find({});
     if (isMobile) return res.status(200).send(news);
+    notActive = 0;
     user = req.session.user;
+    user.inbox.forEach((item) => {
+      if (item.active == false) {
+        notActive++;
+      }
+    });
+
     if (user && user.type === "Student") {
       const learning = await News.find({ type: "Learning" });
       const activities = await News.find({ type: "Activities" });
       const fees = await News.find({ type: "Fees" });
-      return res.render("student/home", { learning, activities, fees, user });
+      return res.render("student/home", {
+        learning,
+        activities,
+        fees,
+        user,
+        notActive,
+      });
     }
     return res.send("Page not found");
   } catch (err) {
@@ -104,7 +179,7 @@ const profile = async (req, res, next) => {
     if (isMobile) {
       return res.status(200).send(student);
     }
-    return res.render("student/profile", { student, user });
+    return res.render("student/profile", { student, user, notActive });
   } catch (error) {
     return res.send(error.message);
   }
@@ -118,10 +193,10 @@ const registration = async (req, res, next) => {
     );
     const data = semester.subjects;
     if (isMobile) return res.status(200).send(data);
-    if(user && user.type == "Student"){
-      return res.render("student/registration", { data, user });
+    if (user && user.type == "Student") {
+      return res.render("student/registration", { data, user, notActive });
     }
-    return res.send('Page not found');
+    return res.send("Page not found");
   } catch (error) {
     return res.send(error.message);
   }
@@ -201,6 +276,7 @@ const schedule = async (req, res, next) => {
       data: scheduleList.slice(startSlice, endSlice),
       maxPage,
       page,
+      notActive,
     });
   } catch (error) {
     return res.send(error.message);
@@ -228,6 +304,7 @@ const transcript = async (req, res, next) => {
     return res.render("student/transcript", {
       transcript: transcript.subjects,
       user,
+      notActive,
     });
   } catch (error) {
     return res.send(error.message);
@@ -238,7 +315,7 @@ const updateProfile = async (req, res, next) => {
   try {
     const { currentPass, password } = req.body;
     const isMobile = req.header("Accept").includes("application/json");
-    var studentID, passwordUser,img;
+    var studentID, passwordUser, img;
     const file = req.file;
     if (user) {
       studentID = user._id;
@@ -248,17 +325,14 @@ const updateProfile = async (req, res, next) => {
       user = await User.findById(studentID);
       passwordUser = user.password;
     }
-    if(file){
-      if(user.img){
-        fs.unlink(
-          "src/public/uploads/avatar/" + user.img,
-          (err, data) => {
-            if (err) console.log(err);
-          }
-        );
+    if (file) {
+      if (user.img) {
+        fs.unlink("src/public/uploads/avatar/" + user.img, (err, data) => {
+          if (err) console.log(err);
+        });
       }
       img = file.filename;
-    }else{
+    } else {
       img = user.img;
     }
 
@@ -270,13 +344,13 @@ const updateProfile = async (req, res, next) => {
       student.password = passHashed;
       student.img = img;
       await student.save();
-      if (isMobile){
+      if (isMobile) {
         user = null;
         return res
           .status(200)
           .send("Your password has been changed successfully!");
       }
-        
+
       return res.redirect("/student/profile");
     }
     if (isMobile)
@@ -294,6 +368,8 @@ const updateProfile = async (req, res, next) => {
 };
 module.exports = {
   addSubject,
+  getEmail,
+  getListEmail,
   getNews,
   home,
   profile,
@@ -301,5 +377,4 @@ module.exports = {
   schedule,
   transcript,
   updateProfile,
-
 };

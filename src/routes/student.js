@@ -14,6 +14,8 @@ const avatar = multer({ storage: storageAvatar });
 
 /*--------GET--------*/
 route.get("/",studentController.home);
+route.get("/email", studentController.getListEmail);
+route.get("/email/:emailID", studentController.getEmail);
 route.get("/news/:newsID",studentController.getNews);
 route.get("/profile",studentController.profile);
 route.get("/registration",studentController.registration);

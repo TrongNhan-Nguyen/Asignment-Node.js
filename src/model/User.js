@@ -14,13 +14,13 @@ const UserSchema = new Schema(
     password: { type: String, required: true, minlength: 6 },
     type: {
       type: String,
-      enum: ["Admin","Lecturer" ,"Student"],
+      enum: ["Admin", "Lecturer", "Student"],
       default: "Student",
     },
-    subject:{
-      type:String,
+    subject: {
+      type: String,
     },
-    schedule:{
+    schedule: {
       type: Schema.Types.ObjectId,
       ref: "Schedule",
     },
@@ -28,10 +28,19 @@ const UserSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Transcript",
     },
-    img:{type:String},
+    img: { type: String },
     phoneNumber: {
       type: String,
     },
+    inbox: [
+      {
+        from: { type: String },
+        active: { type: Boolean, default: false },
+        title: { type: String },
+        content: { type: String },
+        pubDate: { type: String },
+      },
+    ],
     address: {
       type: String,
     },

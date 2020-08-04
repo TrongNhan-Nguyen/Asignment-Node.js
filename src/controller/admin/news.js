@@ -1,6 +1,6 @@
 const News = require("../../model/News");
 const fs = require("fs");
-var user;
+var user,notActive=0;
 // Create News
 const createNews = async (req, res, next) => {
   try {
@@ -34,7 +34,7 @@ const deleteNews = async (req, res, next) => {
 const formAdd = async (req, res, next) => {
   try {
     if (user && user.type === "Admin") {
-      return res.render("admin/add_news",{user});
+      return res.render("admin/add_news",{user,notActive});
     }
     return res.send("Page not found");
   } catch (error) {
@@ -46,7 +46,7 @@ const editNews = async (req, res, next) => {
   try {
     const { newsID } = req.params;
     const news = await News.findById(newsID);
-    return res.render("admin/edit_news", { news,user });
+    return res.render("admin/edit_news", { news,user,notActive });
   } catch (error) {
     return res.send(error.message);
   }
@@ -54,12 +54,18 @@ const editNews = async (req, res, next) => {
 // Get list news
 const getNewsList = async (req, res, next) => {
   try {
-    user  = req.session.user;
+    user = req.session.user;
+    notActive = 0;
+    user.inbox.forEach((item) => {
+      if (item.active == false) {
+        notActive++;
+      }
+    });
     if (user && (user.type==="Admin" || user.type==="Lecturer")) {
       const learning = await News.find({ type: "Learning" });
       const activities = await News.find({ type: "Activities" });
       const fees = await News.find({ type: "Fees" });
-      return res.render("admin/news", { learning, activities, fees,user });
+      return res.render("admin/news", { learning, activities, fees,user,notActive });
     }
     return res.send("Page not found");
   } catch (error) {

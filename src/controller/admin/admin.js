@@ -8,8 +8,10 @@ const session = require("express-session");
 const nodemailer = require("nodemailer");
 const { parse } = require("json2csv");
 const csv = require("csvtojson");
-
-var isAdmin, user;
+var isAdmin,
+  user,
+  userEmail;
+  notActive = 0;
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -178,7 +180,7 @@ const formAddUser = async (req, res, next) => {
       const data = await Subject.find({})
         .select({ name: 1, _id: 0 })
         .sort("name");
-      return res.render("admin/add_user", { data, user });
+      return res.render("admin/add_user", { data, user, notActive });
     }
     return res.send("Page not found");
   } catch (err) {
@@ -188,13 +190,42 @@ const formAddUser = async (req, res, next) => {
 // Get Admin
 const getAdmin = async (req, res, next) => {
   try {
-    user = req.session.user;
-
     if (user.type == "Admin" || user.type == "Lecturer") {
       const admin = await User.findById(user._id);
-      return res.render("admin/edit_admin", { admin, user });
+      return res.render("admin/edit_admin", { admin, user, notActive });
     }
     return res.send("Page not found");
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
+// Get email
+const getEmail = async (req, res) => {
+  try {
+    const { emailID } = req.params;
+    var email;
+    var index;
+    for (var i = 0; i < user.inbox.length; i++) {
+      var temp = user.inbox[i];
+      if (temp._id == emailID) {
+        email = temp;
+        index = i;
+        break;
+      }
+    }
+    userEmail = await User.findById(user._id);
+    if (userEmail.inbox[index].active == false) {
+      userEmail.inbox[index].active = true;
+      notActive = 0;
+    }
+    await userEmail.save();
+    userEmail.inbox.forEach((item) => {
+      if (item.active == false) {
+        notActive++;
+      }
+    });
+    user = userEmail;
+    return res.render("admin/get_email", { user: userEmail, notActive, email });
   } catch (error) {
     return res.send(error.message);
   }
@@ -209,9 +240,25 @@ const getListAdmin = async (req, res, next) => {
     }
     isAdmin = true;
     const data = await User.find({ type: "Admin" });
-    return res.render("admin/home", { data, user });
+    notActive = 0;
+    user.inbox.forEach((item) => {
+      if (item.active == false) {
+        notActive++;
+      }
+    });
+    return res.render("admin/home", { data, user, notActive });
   } catch (err) {
     next(err);
+  }
+};
+// Get List email
+const getListEmail = async (req, res) => {
+  try {
+    user = userEmail? userEmail: req.session.user;
+    const data = user.inbox;
+    return res.render("admin/email", { user, notActive, data, notActive });
+  } catch (error) {
+    return res.send(error.message);
   }
 };
 // Get list student
@@ -232,6 +279,7 @@ const getListUser = async (req, res, next) => {
         lecturerList,
         user,
         emailList,
+        notActive,
       });
     }
     return res.send("Page not found");
@@ -246,7 +294,12 @@ const getUser = async (req, res, next) => {
     const subjects = await Subject.find({}).sort("name");
     const userUpdate = await User.findById(userID);
     if (userUpdate.type == "Lecturer") {
-      return res.render("admin/edit_user", { user, subjects, userUpdate });
+      return res.render("admin/edit_user", {
+        user,
+        subjects,
+        userUpdate,
+        notActive,
+      });
     }
     const transcriptID = userUpdate.transcript;
     const transcript = await Transcript.findById(transcriptID).populate({
@@ -257,9 +310,10 @@ const getUser = async (req, res, next) => {
       transcript: transcript.subjects,
       subjects,
       user,
+      notActive,
     });
   } catch (err) {
-    return res.render(err);
+    return res.send(err.message);
   }
 };
 // Get script
@@ -355,6 +409,19 @@ const sendEmail = async (req, res) => {
       text: body.content,
       attachments,
     };
+    emailList.forEach((item) => {
+      User.findOne({ email: item }).exec((err, document) => {
+        if (err) throw err;
+        var inbox = {
+          from: user.name,
+          title: body.title,
+          content: body.content,
+          pubDate: new Date().toISOString(),
+        };
+        document.inbox.push(inbox);
+        document.save();
+      });
+    });
     await transporter.sendMail(mailOptions);
     return res.redirect("/admin/user");
   } catch (error) {
@@ -463,6 +530,8 @@ module.exports = {
   exportData,
   formAddUser,
   getAdmin,
+  getEmail,
+  getListEmail,
   getListAdmin,
   getListUser,
   getUser,

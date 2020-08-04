@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/icon.css" />
+    <link rel="stylesheet" href="/css/sb-admin-2.min.css" />
+    <link rel="stylesheet" href="/css/fonts-admin2.css" />
+  </head>
+  <body>
+    <div id="wrapper">
+      <!-- Side bar -->
+      <%- include('../partials/nav_student.ejs',{name:user.name}) %>
+      <!-- Page wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <div id="content" style="text-align: center;">
+          <h2 class="text-primary mt-4">
+            <%-email.title%>
+          </h2>
+          <h6 class="text-primary mt-4">
+            <%-email.content%>
+          </h6>
+          <footer
+            style="float: right; margin-right: 50px;"
+            class="blockquote-footer"
+          >
+            <%-email.pubDate%>
+          </footer>
+        </div>
+      </div>
+    </div>
+    <!-- Script for file -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/jquery.easing.min.js"></script>
+    <script src="/js/sb-admin-2.min.js"></script>
+  </body>
+</html>
